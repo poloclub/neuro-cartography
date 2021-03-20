@@ -302,11 +302,17 @@ export class EmbeddingHeader {
     slider.id = 'epoch-slider'
     slider_wrap.className = 'slider'
     slider.type = 'range'
-    slider.min = '1'
-    slider.max = '5'
-    slider.value = '3'
+    slider.min = 1
+    slider.max = 5
+    slider.value = 3
     epoch.appendChild(slider_wrap)
     slider_wrap.appendChild(slider)
+
+    // Slider action
+    slider.oninput = function() {
+      let epoch_number = document.getElementById('epoch')
+      epoch_number.innerText = this.value
+    }
 
   }
 
