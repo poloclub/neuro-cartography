@@ -5,10 +5,10 @@
 
 #graph_view-header {
   transform: translate(0px, calc(47px - 100vh));
-  border-bottom: 0.5px solid var(--bright_gray_border);
   position: absolute;
   font-size: 15px;
   color: var(--gray_text);
+  height: 40px;
   padding-top: 13px;
   padding-bottom: 13px;
   padding-left: 20px;
@@ -17,6 +17,7 @@
   align-items: center;
   justify-content: space-between;
   width: calc(100vw - 400px - 40px);
+  border-bottom: 0.5px solid var(--bright_gray_border);
 }
 
 .graph_view-header-component {

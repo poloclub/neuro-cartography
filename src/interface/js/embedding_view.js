@@ -1,8 +1,7 @@
 import { Icon } from './icon.js'
-import { DivTitle } from './div_title.js'
-import { data_path } from './constant.js'
 import { get_css_var } from './utils.js'
-import { ExampleView, ExampleViewNeuron } from './example_view.js'
+import {  ExampleViewNeuron } from './example_view.js'
+import { Dropdown } from './dropdown.js'
 
 ////////////////////////////////////////////////////////////
 // Embedding
@@ -13,7 +12,7 @@ export class EmbeddingView {
   constructor(parent_id, emb_data, neuron_data) {
 
     // Embeddng view size
-    this.emb_H = 400
+    this.emb_H = 467
     this.emb_W = 400
 
     // Embedding view parent
@@ -110,7 +109,7 @@ export class EmbeddingView {
       .duration(750)
       .call(
         zoom.transform,
-        d3.zoomIdentity.translate(W * 0.1, H * 0.05).scale(0.8)
+        d3.zoomIdentity.translate(W * 0.1, H * 0.2).scale(0.75)
       )
   }
 
@@ -232,5 +231,46 @@ export class EmbeddingView {
   
 }
 
+////////////////////////////////////////////////////////////
+// Embedding header
+////////////////////////////////////////////////////////////
 
+export class EmbeddingHeader {
 
+  constructor(id) {
+    this.view = document.getElementById(id)
+    this.id = id
+  }
+
+  gen_filtering() {
+
+    // Filtering div
+    let filtering = document.createElement('div')
+    filtering.id = `${this.id}-filtering`
+    this.view.appendChild(filtering)
+
+    // Title
+    let title = document.createElement('div')
+    title.className = 'embedding-header-title'
+    title.innerText = 'Filtering'
+    filtering.appendChild(title)
+
+    // Dropdown
+    let dropdown = new Dropdown('embedding-filtering')
+    dropdown.gen_dropdown('All neurons')
+    for (let item of ['All-neurons', 'Class-neurons', 'Selected-neurons']) {
+      dropdown.add_dropdown_menu_item(
+        item,
+        item.replace('-', ' '),
+        {
+          'mouseover': function() {  },
+          'mouseout': function() {  },
+          'click': function() {  }
+        }
+      )
+    }
+    filtering.appendChild(dropdown.get_dropdown())
+
+  }
+
+}
