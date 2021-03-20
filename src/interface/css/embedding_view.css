@@ -24,8 +24,8 @@
   transform: translate(0px, -468px);
   padding-top: 13px;
   padding-bottom: 13px;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
   width: calc(400px - 40px);
   height: 40px;
   border-bottom: 0.5px solid var(--bright_gray_border);
@@ -39,8 +39,8 @@
 
 .embedding-header-component {
   display: inline-block;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .embedding-header-title {

@@ -1,7 +1,9 @@
 import { Icon } from './icon.js'
 import { get_css_var } from './utils.js'
-import {  ExampleViewNeuron } from './example_view.js'
+import { ExampleViewNeuron } from './example_view.js'
 import { Dropdown } from './dropdown.js'
+import { emb_style } from './constant.js'
+import { embedding_setup, selected_groups } from './variable.js'
 
 ////////////////////////////////////////////////////////////
 // Embedding
@@ -158,7 +160,7 @@ export class EmbeddingView {
           let class3 = 'emb-dot-' + neuron.split('-')[0]
           return [class1, class2, class3].join(' ')
         })
-        .attr('r', 3)
+        .attr('r', emb_style['normal-r'])
         .attr('cx', d => { return x_scale(d[1][0]) })
         .attr('cy', d => { return y_scale(d[1][1]) })
         .on('mouseover', d => { 
@@ -177,8 +179,7 @@ export class EmbeddingView {
     // Highlight dot
     d3.select(`#dot-${neuron}`)
       .attr('fill', get_css_var('--hotpink'))
-      .attr('r', 5)
-      .style('opacity', 1)
+      .attr('r', emb_style['highlight-r'])
 
     // Highlight group
     let group = this.neuron_to_group[neuron]
@@ -214,8 +215,7 @@ export class EmbeddingView {
     // Dehighlight dot
     d3.selectAll('.emb-dot')
       .attr('fill', get_css_var('--gray'))
-      .attr('r', 3)
-      .style('opacity', 0.5)
+      .attr('r', emb_style['normal-r'])
 
     // Highlight group
     let group = this.neuron_to_group[neuron]
@@ -257,16 +257,19 @@ export class EmbeddingHeader {
     filtering.appendChild(title)
 
     // Dropdown
+    let this_class = this
     let dropdown = new Dropdown('embedding-filtering')
     dropdown.gen_dropdown('All neurons')
-    for (let item of ['All-neurons', 'Class-neurons', 'Selected-neurons']) {
+    for (let item of ['All-neurons', 'Neurons-of-class', 'Neurons-of-selected-groups']) {
       dropdown.add_dropdown_menu_item(
         item,
-        item.replace('-', ' '),
+        item.replaceAll('-', ' '),
         {
           'mouseover': function() {  },
           'mouseout': function() {  },
-          'click': function() {  }
+          'click': function() { 
+            this_class.emb_filtering_item_click(item)
+           }
         }
       )
     }
@@ -310,8 +313,36 @@ export class EmbeddingHeader {
 
     // Slider action
     slider.oninput = function() {
+      // TODO: Update embedding view according to the selected epoch
+      let selected_epoch = this.value
       let epoch_number = document.getElementById('epoch')
-      epoch_number.innerText = this.value
+      epoch_number.innerText = selected_epoch
+      embedding_setup['epoch'] = parseInt(selected_epoch)
+    }
+
+  }
+
+  emb_filtering_item_click(item) {
+
+    // Update filtering mode
+    embedding_setup['filtering'] = item
+
+    // Selected neurons
+    if (item.toLowerCase().includes('selected')) {
+
+      d3.selectAll('.emb-dot')
+        .style('display', 'none')
+
+      for(let group of selected_groups['groups']) {
+        d3.selectAll('.emb-dot-group-' + group)
+          .style('display', 'block')
+      }
+    }
+    
+    // All neurons
+    if (item == 'All-neurons') {
+      d3.selectAll('.emb-dot')
+        .style('display', 'block')
     }
 
   }
