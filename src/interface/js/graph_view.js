@@ -364,7 +364,7 @@ export class GraphView {
       .duration(750)
       .call(
         zoom.transform,
-        d3.zoomIdentity.translate(W / 2, 100).scale(0.13)
+        d3.zoomIdentity.translate(W * 0.55, H * 0.35).scale(0.06)
       )
   }
   

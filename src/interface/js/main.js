@@ -74,6 +74,7 @@ class Main {
       'embedding_header'
     )
     emb_header.gen_filtering()
+    emb_header.gen_epoch()
   }
 
   generate_embedding_view() {

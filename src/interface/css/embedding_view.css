@@ -39,11 +39,36 @@
 
 .embedding-header-component {
   display: inline-block;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
 .embedding-header-title {
   padding-right: 15px;
   font-weight: bold;
 }
+
+#epoch-slider {
+  transform: translate(-3px, 3px);
+  -webkit-appearance: none;
+  outline: none;
+  background: var(--brigt_grapy);
+  width: 120px;
+  height: 3px;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 15px;
+  width: 15px;
+  background: var(--gray);
+  border-radius: 50%;
+ }
+ 
+ input[type="range"]::-moz-range-thumb {
+  height: 15px;
+  width: 15px;
+  background: var(--gray);
+  border-radius: 50%;
+ }

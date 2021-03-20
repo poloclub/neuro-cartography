@@ -247,6 +247,7 @@ export class EmbeddingHeader {
     // Filtering div
     let filtering = document.createElement('div')
     filtering.id = `${this.id}-filtering`
+    filtering.className = 'embedding-header-component'
     this.view.appendChild(filtering)
 
     // Title
@@ -270,6 +271,42 @@ export class EmbeddingHeader {
       )
     }
     filtering.appendChild(dropdown.get_dropdown())
+
+  }
+
+  gen_epoch() {
+
+    // Epoch div
+    let epoch = document.createElement('div')
+    epoch.id = `${this.id}-epoch`
+    epoch.className = 'embedding-header-component'
+    this.view.appendChild(epoch)
+
+    // Title
+    let title = document.createElement('div')
+    title.className = 'embedding-header-title'
+    title.innerText = 'Epoch'
+    title.style.display = 'inline-block'
+    epoch.appendChild(title)
+
+    // Epoch number
+    let number = document.createElement('div')
+    number.id = 'epoch'
+    number.innerText = '3'
+    number.style.display = 'inline-block'
+    epoch.appendChild(number)
+
+    // Slider
+    let slider_wrap = document.createElement('div')
+    let slider = document.createElement('input')
+    slider.id = 'epoch-slider'
+    slider_wrap.className = 'slider'
+    slider.type = 'range'
+    slider.min = '1'
+    slider.max = '5'
+    slider.value = '3'
+    epoch.appendChild(slider_wrap)
+    slider_wrap.appendChild(slider)
 
   }
 
