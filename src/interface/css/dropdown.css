@@ -1,0 +1,16 @@
+.dropdown {
+  font-size: 15px;
+  border-bottom: solid 0.5px var(--gray_text);
+  color: var(--gray_text);
+}
+
+.dropdown-menu {
+  display: none;
+  padding: 10px;
+  transform: translate(0px, 10px);
+  border: 0.5px solid var(--gray_text);
+  border-radius: 5px;
+  overflow: scroll;
+  position: absolute;
+  background-color: white;
+}

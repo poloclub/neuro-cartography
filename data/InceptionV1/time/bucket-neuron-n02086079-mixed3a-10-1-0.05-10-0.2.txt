@@ -1,0 +1,4 @@
+total time: 4.92 sec
+mixed3a
+# iter: 261212
+# processed: 198

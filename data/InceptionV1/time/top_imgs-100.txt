@@ -1,0 +1,24 @@
+<<<<<<< HEAD
+mixed5b_5x5
+Max act
+total_time: 694.39
+gpu_time: 694.33
+cpu_time: 0.06
+Find top imgs: 0.68 sec
+=======
+<<<<<<< HEAD
+mixed5a
+Max act
+total_time: 618.64
+gpu_time: 618.12
+cpu_time: 0.52
+Find top imgs: 12.05 sec
+=======
+mixed5a_3x3
+Max act
+total_time: 692.94
+gpu_time: 692.78
+cpu_time: 0.16
+Find top imgs: 2.22 sec
+>>>>>>> 051d8072e7bf6887e5082434e991e1e65c027af1
+>>>>>>> b74e2f1ef5bbdad21f1352f7c89636007869058d

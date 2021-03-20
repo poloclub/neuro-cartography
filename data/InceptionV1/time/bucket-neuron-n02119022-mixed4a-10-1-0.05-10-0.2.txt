@@ -1,0 +1,10 @@
+total time: 11.31 sec
+mixed4a_3x3
+# iter: 101165
+# processed: 1429
+mixed4a_5x5
+# iter: 16028
+# processed: 94
+mixed4a
+# iter: 482448
+# processed: 13396

@@ -1,0 +1,54 @@
+#header {
+  height: 50px;
+  display: flex;
+  padding: 0px 20px;
+  align-items: center;
+  color: white;
+  background-color: var(--gray);
+  border-bottom: 1px solid var(--bright_gray_border);
+}
+
+.logo-img {
+  height: inherit;
+}
+
+#header-logo {
+  height: 35px;
+  display: inline-block;
+}
+
+#header-title {
+  padding: 0px 10px;
+  font-size: 25px;
+  /* font-family: 'Righteous', cursive; */
+  font-family: 'Fredoka One', cursive;
+  display: inline-block;
+}
+
+#header-subtitle {
+  padding: 0px 5px;
+  font-size: 20px;
+  transform: translate(0px, 2px);
+  font-family: 'Fredoka One', cursive;
+  color: var(--bright_gray_text);
+  display: inline-block;
+}
+
+.header-button {
+  position: absolute;
+  font-size: 30px;
+  padding: 0px 20px;
+  color: var(--bright_gray_text);
+}
+
+#header-paper {
+  right: 85px;
+}
+
+#header-youtube {
+  right: 40px;
+}
+
+#header-github {
+  right: 0px;
+}

@@ -1,0 +1,10 @@
+total time: 15.83 sec
+mixed4e_3x3
+# iter: 85053
+# processed: 5599
+mixed4e_5x5
+# iter: 18848
+# processed: 677
+mixed4e
+# iter: 450520
+# processed: 27068

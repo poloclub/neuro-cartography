@@ -1,0 +1,3 @@
+total_time: 20.04
+gpu_time: 19.91
+cpu_time: 0.13

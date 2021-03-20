@@ -1,0 +1,6 @@
+mixed4d_3x3
+Max act
+total_time: 4476.88
+gpu_time: 4475.90
+cpu_time: 0.98
+Find top imgs: 25.08 sec

@@ -1,0 +1,47 @@
+.example-view-wrapper {
+  overflow-y: scroll;
+  position: absolute;
+  border-radius: 5px;
+  width: 240px;
+  height: 480px;
+  font-size: 15px;
+  background-color: white;
+  border: #bbbbbb solid 0.5px;
+  color: #787878;
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: none;
+}
+
+.neuron-id {
+  fill: #787878;
+  transform: translate(0px, 20px);
+  font-size: 20px;
+}
+
+.example-view-inner-wrapper {
+  display: block;
+}
+
+.neuron-wrapper {
+  position: absolute;
+  width: 240px;
+  height: 280px;
+}
+
+.example-view-neuron-wrapper {
+  overflow-y: scroll;
+  position: absolute;
+  border-radius: 5px;
+  width: 240px;
+  height: 280px;
+  font-size: 15px;
+  background-color: white;
+  border: #bbbbbb solid 0.5px;
+  color: #787878;
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: none;
+}

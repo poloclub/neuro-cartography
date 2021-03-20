@@ -1,0 +1,3 @@
+total_time: 110.28
+gpu_time: 110.22
+cpu_time: 0.07

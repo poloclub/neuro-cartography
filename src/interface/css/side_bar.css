@@ -1,0 +1,24 @@
+#side_bar {
+  width: 300px;
+  height: calc(100vh - 50px);
+  background-color: var(--bright_gray_bg);
+  border-right: 1px solid var(--bright_gray_border);
+}
+
+#side_bar-header {
+  padding-top: 20px;
+}
+
+#side_bar-icon {
+  font-size: 20px;
+  color: var(--gray_text);
+  display: inline-block;
+  text-align: center;
+  width: 60px;
+}
+
+#side_bar-title {
+  transform: translate(-30px, 0px);
+  width: calc(300px - 60px);
+  justify-content: center;
+}
