@@ -17,7 +17,5 @@ etc/favicon.afdesign
 data/InceptionV1/hash_value_old/
 src/.vscode
 data/InceptionV1/study_examples/
-data/InceptionV1/embedding
 data/InceptionV1/co_activation/*.json
-data/InceptionV1/preprocess/
 data/InceptionV1/hash_value_old2_before_preprocess/
