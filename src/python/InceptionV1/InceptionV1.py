@@ -1,8 +1,7 @@
 '''
 * Project:
-    Neuro-Cartography: Drawing Concept-based Neural Maps to Interpret 
-    Deep Neural Networks by Automatically Discovering and Visualizing 
-    Cell Assemblies
+    NeuroCartography: Scalable Automatic Visual Summarization of
+    Concepts in Deep Neural Networks
 * File name:
     InceptionV1.py
 * Description:
@@ -10,7 +9,7 @@
 * Author:
     Haekyu Park (haekyu@gatech.edu)
 * Date:
-    Jan 30, 2020
+    Mar 20, 2021
 '''
 
 
@@ -41,7 +40,7 @@ class InceptionV1:
             self.num_imgs = self.get_number_of_input_imgs()
         
         '''
-        Model data
+        Model 
         '''
         self.model = None
 

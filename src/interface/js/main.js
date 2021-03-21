@@ -50,13 +50,13 @@ class Main {
       function(data) {
 
         // Load and parse data
-        this_class.parse_neuron_data(data.slice(1))
+        this_class.parse_neuron_data(data.slice(6))
 
         // Generate embebdding header
         this_class.gen_embedding_header()
         
         // Generate embedding view
-        this_class.emb_data = data[0]
+        this_class.emb_data = data.slice(0, 6)
         this_class.generate_embedding_view()
 
         // Generate graph view header
@@ -112,10 +112,19 @@ class Main {
     return neuron_paths
   }
 
+  get_emb_file_path() {
+    let emb_paths = []
+    for (let i of [0, 1, 2, 3, 4, 5]) {
+      let file_path = `${data_path['emb_path']}/embedding_2d-30-1-10-0.01-${i}.json`
+      emb_paths.push(file_path)
+    }
+    return emb_paths
+  }
+
   get_data_path_list() {
     let path_list = []
     path_list = path_list.concat(
-      data_path['emb_path']
+      this.get_emb_file_path()
     )
     path_list = path_list.concat(
       this.get_neuron_file_path()

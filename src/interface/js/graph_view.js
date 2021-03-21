@@ -172,7 +172,7 @@ export class GraphViewHeader {
   }
 
   format_class_label(s) {
-    s = s.replaceAll('_', ' ')
+    s = s.replace(/_/g, ' ')
     s = s.charAt(0).toUpperCase() + s.slice(1)
     return s
   }

@@ -33,6 +33,13 @@ def parse_args():
         type=str,                
         help='CNN model name'
     )
+
+    parser.add_argument(
+        '--compression_ratio', 
+        default=5, 
+        type=int,                
+        help='compression_ratio (5 means 0.5)'
+    )
     
     # GPU
     parser.add_argument(
@@ -217,7 +224,7 @@ def parse_args():
     )
     parser.add_argument(
         '--epoch',
-        default=3, 
+        default=5, 
         type=int,
         help='Epoch'
     )
