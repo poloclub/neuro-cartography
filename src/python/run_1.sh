@@ -26,10 +26,10 @@
 # python main.py --gen_bucket T --gpu 2 --blk mixed4c_3x3 --batch_size 500
 # python main.py --gen_bucket T --gpu 2 --blk mixed4c_5x5 --batch_size 500
 
-python main.py --gpu 2 --gen_co_act T --gen_emb T --reduce_emb T --emb_version 0
-python main.py --gpu 2 --gen_co_act T --gen_emb T --reduce_emb T --emb_version 1
-python main.py --gpu 2 --gen_co_act T --gen_emb T --reduce_emb T --emb_version 2
-python main.py --gpu 2 --gen_co_act T --gen_emb T --reduce_emb T --emb_version 3
-python main.py --gpu 2 --gen_co_act T --gen_emb T --reduce_emb T --emb_version 4
-python main.py --gpu 2 --gen_co_act T --gen_emb T --reduce_emb T --emb_version 5
+python main.py --gpu 2 --gen_emb T --reduce_emb T --emb_version 0
+python main.py --gpu 2 --gen_emb T --reduce_emb T --emb_version 1
+python main.py --gpu 2 --gen_emb T --reduce_emb T --emb_version 2
+python main.py --gpu 2 --gen_emb T --reduce_emb T --emb_version 3
+python main.py --gpu 2 --gen_emb T --reduce_emb T --emb_version 4
+python main.py --gpu 2 --gen_emb T --reduce_emb T --emb_version 5
 
