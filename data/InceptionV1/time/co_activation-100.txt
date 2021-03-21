@@ -1,2 +1,2 @@
 Find co-activated neurons
-1.48 sec
+1.36 sec

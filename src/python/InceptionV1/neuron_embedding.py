@@ -17,6 +17,7 @@
 import tqdm
 import json
 import umap
+import random
 import numpy as np
 import tensorflow as tf
 from time import time
@@ -53,9 +54,6 @@ class NeuralEmbedding:
         self.emb2d = {}
         self.top_imgs = {}
         self.co_act_neurons = {}
-
-        # Global variable
-        # self.img_idx = 0
 
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -238,37 +236,37 @@ class NeuralEmbedding:
         with tqdm.tqdm(total=T) as pbar:
 
             for neurons in co_act:
-                
-                for u in neurons:
-                    for v in neurons:
 
-                        if u == v:
-                            continue
+                random.shuffle(neurons)
+                for i, u in enumerate(neurons[:-1]):
+                    
+                    # Neighbor neurons
+                    v = neurons[i + 1]
 
-                        # 1 - sigma(V_u \dot V_v)
-                        coeff = 1 - self.sigmoid(
-                            self.emb[u].dot(self.emb[v])
-                        )
-                            
-                        # Gradient of emb_u
-                        g_u = -coeff * self.emb[v]
-                        for neg in range(self.N):
-                            n = np.random.randint(total_num_neurons)
-                            neuron = all_neurons[n]
-                            dot_p = self.emb[neuron].dot(self.emb[neuron])
-                            g_u += self.sigmoid(dot_p) * self.emb[neuron]
+                    # 1 - sigma(V_u \dot V_v)
+                    coeff = 1 - self.sigmoid(
+                        self.emb[u].dot(self.emb[v])
+                    )
+                        
+                    # Gradient of emb_u
+                    g_u = -coeff * self.emb[v]
+                    for neg in range(self.N):
+                        n = np.random.randint(total_num_neurons)
+                        neuron = all_neurons[n]
+                        dot_p = self.emb[neuron].dot(self.emb[neuron])
+                        g_u += self.sigmoid(dot_p) * self.emb[neuron]
 
-                        # Gradient of emb_v
-                        g_v = -coeff * self.emb[u]
-                        for neg in range(self.N):
-                            n = np.random.randint(total_num_neurons)
-                            neuron = all_neurons[n]
-                            dot_p = self.emb[neuron].dot(self.emb[v])
-                            g_v += self.sigmoid(dot_p) * self.emb[neuron]
+                    # Gradient of emb_v
+                    g_v = -coeff * self.emb[u]
+                    for neg in range(self.N):
+                        n = np.random.randint(total_num_neurons)
+                        neuron = all_neurons[n]
+                        dot_p = self.emb[neuron].dot(self.emb[v])
+                        g_v += self.sigmoid(dot_p) * self.emb[neuron]
 
-                        # Update
-                        self.emb[u] -= self.lr * g_u
-                        self.emb[v] -= self.lr * g_v
+                    # Update
+                    self.emb[u] -= self.lr * g_u
+                    self.emb[v] -= self.lr * g_v
 
                 pbar.update(1)
 
