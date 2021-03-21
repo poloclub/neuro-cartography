@@ -63,3 +63,10 @@ export var patch_style = {
 export var cascade_style = {
   // 'bg-color': 'rgb(50, 50, 50)'
 }
+
+export var emb_style = {
+  'normal-r': 3,
+  'highlight-r': 5,
+  'hover-r': 8,
+  'normal-opacity': 0.5
+}

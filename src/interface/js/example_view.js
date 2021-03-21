@@ -1,5 +1,6 @@
 import { 
   data_path, 
+  emb_style, 
   patch_style,
 } from './constant.js'
 import {
@@ -44,6 +45,7 @@ export class ExampleView {
           return `translate(0px, ${y}px)`
         })
         .on('mouseover', function() {
+
           d3.selectAll('.example-view-wrapper')
             .style('display', 'none')
           let group_id = `${blk}-${group}`
@@ -57,8 +59,7 @@ export class ExampleView {
           for (let neuron of neurons) {
             d3.select('#dot-' + neuron)
               .attr('fill', get_css_var('--hotpink'))
-              .attr('r', 8)
-              .style('opacity', 1)
+              .attr('r', emb_style['highlight-r'])
           }
         })
         .on('mouseout', function() {
@@ -68,8 +69,7 @@ export class ExampleView {
             .attr('fill', get_css_var('--gray'))
           d3.selectAll('.emb-dot')
             .attr('fill', get_css_var('--gray'))
-            .attr('r', 3)
-            .style('opacity', 0.5)
+            .attr('r', emb_style['normal-r'])
         })
 
       // Add neuron id

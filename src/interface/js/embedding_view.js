@@ -1,8 +1,9 @@
 import { Icon } from './icon.js'
-import { DivTitle } from './div_title.js'
-import { data_path } from './constant.js'
 import { get_css_var } from './utils.js'
-import { ExampleView, ExampleViewNeuron } from './example_view.js'
+import { ExampleViewNeuron } from './example_view.js'
+import { Dropdown } from './dropdown.js'
+import { emb_style } from './constant.js'
+import { embedding_setup, selected_groups } from './variable.js'
 
 ////////////////////////////////////////////////////////////
 // Embedding
@@ -13,7 +14,7 @@ export class EmbeddingView {
   constructor(parent_id, emb_data, neuron_data) {
 
     // Embeddng view size
-    this.emb_H = 400
+    this.emb_H = 467
     this.emb_W = 400
 
     // Embedding view parent
@@ -110,7 +111,7 @@ export class EmbeddingView {
       .duration(750)
       .call(
         zoom.transform,
-        d3.zoomIdentity.translate(W * 0.1, H * 0.05).scale(0.8)
+        d3.zoomIdentity.translate(W * 0.1, H * 0.2).scale(0.75)
       )
   }
 
@@ -159,7 +160,7 @@ export class EmbeddingView {
           let class3 = 'emb-dot-' + neuron.split('-')[0]
           return [class1, class2, class3].join(' ')
         })
-        .attr('r', 3)
+        .attr('r', emb_style['normal-r'])
         .attr('cx', d => { return x_scale(d[1][0]) })
         .attr('cy', d => { return y_scale(d[1][1]) })
         .on('mouseover', d => { 
@@ -178,8 +179,7 @@ export class EmbeddingView {
     // Highlight dot
     d3.select(`#dot-${neuron}`)
       .attr('fill', get_css_var('--hotpink'))
-      .attr('r', 5)
-      .style('opacity', 1)
+      .attr('r', emb_style['highlight-r'])
 
     // Highlight group
     let group = this.neuron_to_group[neuron]
@@ -215,8 +215,7 @@ export class EmbeddingView {
     // Dehighlight dot
     d3.selectAll('.emb-dot')
       .attr('fill', get_css_var('--gray'))
-      .attr('r', 3)
-      .style('opacity', 0.5)
+      .attr('r', emb_style['normal-r'])
 
     // Highlight group
     let group = this.neuron_to_group[neuron]
@@ -232,5 +231,120 @@ export class EmbeddingView {
   
 }
 
+////////////////////////////////////////////////////////////
+// Embedding header
+////////////////////////////////////////////////////////////
 
+export class EmbeddingHeader {
 
+  constructor(id) {
+    this.view = document.getElementById(id)
+    this.id = id
+  }
+
+  gen_filtering() {
+
+    // Filtering div
+    let filtering = document.createElement('div')
+    filtering.id = `${this.id}-filtering`
+    filtering.className = 'embedding-header-component'
+    this.view.appendChild(filtering)
+
+    // Title
+    let title = document.createElement('div')
+    title.className = 'embedding-header-title'
+    title.innerText = 'Filtering'
+    filtering.appendChild(title)
+
+    // Dropdown
+    let this_class = this
+    let dropdown = new Dropdown('embedding-filtering')
+    dropdown.gen_dropdown('All neurons')
+    for (let item of ['All-neurons', 'Neurons-of-class', 'Neurons-of-selected-groups']) {
+      dropdown.add_dropdown_menu_item(
+        item,
+        item.replaceAll('-', ' '),
+        {
+          'mouseover': function() {  },
+          'mouseout': function() {  },
+          'click': function() { 
+            this_class.emb_filtering_item_click(item)
+           }
+        }
+      )
+    }
+    filtering.appendChild(dropdown.get_dropdown())
+
+  }
+
+  gen_epoch() {
+
+    // Epoch div
+    let epoch = document.createElement('div')
+    epoch.id = `${this.id}-epoch`
+    epoch.className = 'embedding-header-component'
+    this.view.appendChild(epoch)
+
+    // Title
+    let title = document.createElement('div')
+    title.className = 'embedding-header-title'
+    title.innerText = 'Epoch'
+    title.style.display = 'inline-block'
+    epoch.appendChild(title)
+
+    // Epoch number
+    let number = document.createElement('div')
+    number.id = 'epoch'
+    number.innerText = '3'
+    number.style.display = 'inline-block'
+    epoch.appendChild(number)
+
+    // Slider
+    let slider_wrap = document.createElement('div')
+    let slider = document.createElement('input')
+    slider.id = 'epoch-slider'
+    slider_wrap.className = 'slider'
+    slider.type = 'range'
+    slider.min = 1
+    slider.max = 5
+    slider.value = 3
+    epoch.appendChild(slider_wrap)
+    slider_wrap.appendChild(slider)
+
+    // Slider action
+    slider.oninput = function() {
+      // TODO: Update embedding view according to the selected epoch
+      let selected_epoch = this.value
+      let epoch_number = document.getElementById('epoch')
+      epoch_number.innerText = selected_epoch
+      embedding_setup['epoch'] = parseInt(selected_epoch)
+    }
+
+  }
+
+  emb_filtering_item_click(item) {
+
+    // Update filtering mode
+    embedding_setup['filtering'] = item
+
+    // Selected neurons
+    if (item.toLowerCase().includes('selected')) {
+
+      d3.selectAll('.emb-dot')
+        .style('display', 'none')
+
+      for(let group of selected_groups['groups']) {
+        d3.selectAll('.emb-dot-group-' + group)
+          .style('display', 'block')
+      }
+    }
+    
+    // All neurons
+    if (item == 'All-neurons') {
+      d3.selectAll('.emb-dot')
+        .style('display', 'block')
+    }
+
+  }
+
+}

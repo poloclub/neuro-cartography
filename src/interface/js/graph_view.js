@@ -7,11 +7,13 @@ import {
   icon_class, 
   patch_style,
   graph_style,
-  cascade_style
+  cascade_style,
+  emb_style
 } from './constant.js'
 import {
   shown_group,
-  mode
+  mode,
+  selected_groups
 } from './variable.js'
 import { 
   Dropdown 
@@ -364,7 +366,7 @@ export class GraphView {
       .duration(750)
       .call(
         zoom.transform,
-        d3.zoomIdentity.translate(W / 2, 100).scale(0.13)
+        d3.zoomIdentity.translate(W * 0.55, H * 0.35).scale(0.06)
       )
   }
   
@@ -475,7 +477,7 @@ export class GraphView {
       if (num_neuron == 0) {
         return 0
       } else {
-        return W * num_neuron + H - h
+        return W * num_neuron + H - h - graph_style['x_gap']
       }
     }
 
@@ -568,15 +570,13 @@ export class GraphView {
     // Turn off other embeddings first
     d3.selectAll('.emb-dot')
       .attr('fill', get_css_var('--gray'))
-      .attr('r', 3)
-      .style('opacity', 0.5)
+      .attr('r', emb_style['normal-r'])
 
     // Highlight embedding
     for (let neuron of this.neuron_data[blk][group]) {
       d3.select('#dot-' + neuron)
         .attr('fill', get_css_var('--hotpink'))
-        .attr('r', 8)
-        .style('opacity', 1)
+        .attr('r', emb_style['hover-r'])
     }
 
     // Highlight node
@@ -604,8 +604,7 @@ export class GraphView {
         // Dehighlight embedding
         d3.selectAll('.emb-dot')
           .attr('fill', get_css_var('--gray'))
-          .attr('r', 3)
-          .style('opacity', 0.5)
+          .attr('r', emb_style['normal-r'])
 
       } 
     }, 800)
@@ -613,9 +612,42 @@ export class GraphView {
   }
 
   click_node(node) {
+
+    let [blk, group] = node.id.split('-')
+
+    if (selected_groups['groups'].has(node.id)) {
+
+      // Remove group from the selected groups
+      selected_groups['groups'].delete(node.id)
+
+      // Dehighlight node
+      d3.select(`#${node.id}`)
+        .style('fill', get_css_var('--gray'))
+
+      // Turn off embedding
+      d3.selectAll(`.emb-dot-group-${node.id}`)
+        .style('display', 'none')
+
+    } else {
+
+      // Add group to the selected groups
+      selected_groups['groups'].add(node.id)
+
+      // Highlight node
+      d3.select(`#${node.id}`)
+        .style('fill', get_css_var('--hotpink'))
+
+      // Show embedding
+      d3.selectAll('.emb-dot-group-' + node.id)
+        .style('display', 'block')
+
+    }
+
+    
+
     // console.log('click', this)
     // TODO: Remove this
-    // let [blk, group] = node.id.split('-')
+    // 
     // d3.select(`#ex-${blk}-${group}`)
     //   .style('display', 'block')
   }

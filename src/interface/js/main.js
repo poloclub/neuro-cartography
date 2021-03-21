@@ -5,6 +5,7 @@ import {
   InceptionV1
 } from './model.js'
 import {
+  EmbeddingHeader,
   EmbeddingView
 } from './embedding_view.js'
 import { 
@@ -12,6 +13,11 @@ import {
   GraphViewHeader 
 } from './graph_view.js'
 
+
+function main() {
+  let main_view = new Main()
+  main_view.generate_view()
+}
 
 class Main {
 
@@ -45,6 +51,9 @@ class Main {
 
         // Load and parse data
         this_class.parse_neuron_data(data.slice(1))
+
+        // Generate embebdding header
+        this_class.gen_embedding_header()
         
         // Generate embedding view
         this_class.emb_data = data[0]
@@ -58,6 +67,14 @@ class Main {
 
       }
     )
+  }
+
+  gen_embedding_header() {
+    let emb_header = new EmbeddingHeader(
+      'embedding_header'
+    )
+    emb_header.gen_filtering()
+    emb_header.gen_epoch()
   }
 
   generate_embedding_view() {
@@ -117,6 +134,4 @@ class Main {
 
 }
 
-// Make components
-let main = new Main()
-main.generate_view()
+main()
