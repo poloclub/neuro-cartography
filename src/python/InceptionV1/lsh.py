@@ -6,7 +6,7 @@
 * File name:
     lsh.py
 * Description:
-    Hash neurons and connections by LSH
+    Hash neurons by LSH after preprocessing
 * Author:
     Haekyu Park (haekyu@gatech.edu)
 * Date:

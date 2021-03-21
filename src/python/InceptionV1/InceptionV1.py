@@ -19,8 +19,6 @@ import tensorflow as tf
 import lucid.optvis.render as render
 import lucid.modelzoo.vision_models as models
 from keras.applications.inception_v3 import preprocess_input
-from InceptionV1.activation_threshold import *
-from InceptionV1.lsh import *
 from utils.path import *
 
 
@@ -32,14 +30,15 @@ class InceptionV1:
     * structure: http://dgschwend.github.io/netscope/#/preset/googlenet
     '''
     
-    def __init__(self, args):
+    def __init__(self, args={}):
         
         '''
         User setting
         '''
         self.args = args
-        self.data_path = DataPath(args)
-        self.num_imgs = self.get_number_of_input_imgs()
+        if len(args) > 0:
+            self.data_path = DataPath(args)
+            self.num_imgs = self.get_number_of_input_imgs()
         
         '''
         Model data
