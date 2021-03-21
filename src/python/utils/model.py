@@ -1,18 +1,16 @@
 '''
 * Project:
-    Neuro-Cartography: Drawing Concept-based Neural Maps to Interpret 
-    Deep Neural Networks by Automatically Discovering and Visualizing 
-    Cell Assemblies
+    NeuroCartography: Scalable Automatic Visual Summarization of
+    Concepts in Deep Neural Networks
 * File name:
-    load_model.py
+    model.py
 * Description:
-    Load CNN model
+    Load and run CNN model
 * Author:
     Haekyu Park (haekyu@gatech.edu)
 * Date:
-    Jan 30, 2020
+    Mar 20, 2021
 '''
-
 
 import sys
 from InceptionV1.activation_threshold import *
@@ -22,6 +20,7 @@ from InceptionV1.gen_graph import *
 from InceptionV1.example_patch import *
 from InceptionV1.preprocessing import *
 from InceptionV1.neuron_embedding import *
+# from InceptionV1Compressed
 
 
 class ModelWrapper:
@@ -58,6 +57,10 @@ class ModelWrapper:
             from InceptionV1.InceptionV1 import InceptionV1
             self.model = InceptionV1(self.args)
             self.model.load_model()
+
+        elif self.model_name == 'InceptionV1':
+
+            tf.saved_model
 
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
