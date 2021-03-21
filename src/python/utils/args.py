@@ -217,7 +217,7 @@ def parse_args():
     )
     parser.add_argument(
         '--epoch',
-        default=3, 
+        default=1, 
         type=int,
         help='Epoch'
     )
