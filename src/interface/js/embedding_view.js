@@ -61,7 +61,7 @@ export class EmbeddingView {
       max_x = d3.max([x, max_x])
       max_y = d3.max([y, max_y])
     }
-    this.emb_data = data
+    this.emb_data[embedding_setup['epoch']] = data
 
     // Set x, y scale
     this.gen_xy_scale(min_x, min_y, max_x, max_y)
@@ -123,7 +123,7 @@ export class EmbeddingView {
   
     this.gen_embedding_svg_g()
     this.embedding_view_auto_zoomout()
-    this.parse_embedding(this.emb_data)
+    this.parse_embedding(this.emb_data[embedding_setup['epoch']])
     this.add_embedding_dots()
     
   }
@@ -149,7 +149,7 @@ export class EmbeddingView {
 
     d3.select('#embedding-g')
       .selectAll('circle')
-      .data(Object.entries(this.emb_data))
+      .data(Object.entries(this.emb_data[embedding_setup['epoch']]))
       .enter()
       .append('circle')
         .attr('id', d => { return 'dot-' + d[0] })
@@ -263,7 +263,7 @@ export class EmbeddingHeader {
     for (let item of ['All-neurons', 'Neurons-of-class', 'Neurons-of-selected-groups']) {
       dropdown.add_dropdown_menu_item(
         item,
-        item.replaceAll('-', ' '),
+        item.replace(/-/g, ' '),
         {
           'mouseover': function() {  },
           'mouseout': function() {  },
