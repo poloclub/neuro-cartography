@@ -17,6 +17,7 @@
 import tqdm
 import json
 import umap
+import random
 import numpy as np
 import tensorflow as tf
 from time import time
@@ -236,6 +237,7 @@ class NeuralEmbedding:
 
             for neurons in co_act:
 
+                random.shuffle(neurons)
                 for i, u in enumerate(neurons[:-1]):
                     
                     # Neighbor neurons
