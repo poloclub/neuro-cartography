@@ -36,32 +36,32 @@ def main():
     model_wrapper = ModelWrapper(args, data_path)
     model_wrapper.load_model()
     
-    # # Compute activation threshold for neurons
-    # model_wrapper.compute_activation_threshold_for_neurons()
+    # Compute activation threshold for neurons
+    model_wrapper.compute_activation_threshold_for_neurons()
     
-    # # Compute activation threshold for connections 
-    # model_wrapper.compute_activation_threshold_for_connections()
+    # Compute activation threshold for connections 
+    model_wrapper.compute_activation_threshold_for_connections()
 
-    # # Preprocessing
-    # model_wrapper.preprocessing()
+    # Preprocessing
+    model_wrapper.preprocessing()
 
-    # # Generate hash array and hash orders
-    # model_wrapper.generate_permutation_data()
+    # Generate hash array and hash orders
+    model_wrapper.generate_permutation_data()
     
-    # # Compute hash values for neurons
-    # model_wrapper.compute_hash_values()
+    # Compute hash values for neurons
+    model_wrapper.compute_hash_values()
 
-    # # Generate hashed buckets
-    # model_wrapper.generate_bucket()
+    # Generate hashed buckets
+    model_wrapper.generate_bucket()
     
-    # # Generate graph
-    # model_wrapper.generate_graph()
+    # Generate graph
+    model_wrapper.generate_graph()
 
-    # # Generate example patches
-    # model_wrapper.generate_example_patches()
+    # Generate example patches
+    model_wrapper.generate_example_patches()
 
-    # # Generate neuron embedding
-    # model_wrapper.generate_embedding()
+    # Generate neuron embedding
+    model_wrapper.generate_embedding()
 
     
 if __name__ == '__main__':

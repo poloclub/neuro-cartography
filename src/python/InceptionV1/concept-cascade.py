@@ -119,7 +119,7 @@ def main():
 
                 pbar.update(1)
 
-
+    print(cascade)
     with open('../../../data/InceptionV1/cascade/cascade-neuron-top3.json', 'r') as f:
         json.dump(cascade, f)
 

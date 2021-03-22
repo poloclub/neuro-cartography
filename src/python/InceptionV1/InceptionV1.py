@@ -19,6 +19,7 @@ import lucid.optvis.render as render
 import lucid.modelzoo.vision_models as models
 from keras.applications.inception_v3 import preprocess_input
 from utils.path import *
+from time import time
 
 
 class InceptionV1:
@@ -35,7 +36,7 @@ class InceptionV1:
         User setting
         '''
         self.args = args
-        if len(args) > 0:
+        if args != {}:
             self.data_path = DataPath(args)
             self.num_imgs = self.get_number_of_input_imgs()
         

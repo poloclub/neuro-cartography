@@ -38,6 +38,7 @@ class LSH:
         # Hyperparameters
         self.blk = args.blk
         self.batch_size = args.batch_size
+        self.N = args.num_hash_per_img
         self.R = args.band_size
         self.B = args.num_bands
 
@@ -113,7 +114,7 @@ class LSH:
             for n in self.pre_groups[group]:
                 neuron = '{}-{}'.format(self.blk, n)
                 self.hash_vals[group][neuron] = \
-                    np.zeros((num_imgs, self.B, self.R)) - 1
+                    np.zeros((num_imgs, self.N)) - 1
                 
 
     def compute_t_act(self):
@@ -154,40 +155,38 @@ class LSH:
             H, W = act_maps.shape[1], act_maps.shape[2]
             for img_ii, img_i in enumerate(img_indexes):
 
-                for b in range(self.B):
-
+                for hash_i in range(self.N):
+                    
                     for neuron_i, n in enumerate(neurons):
 
                         # Find activated grid in act map
                         act_map = act_maps[img_ii, :, :, neuron_i]
                         act_r, act_c = np.where(act_map > 0)
 
-                        # Compute hash values for each r
-                        for r in range(self.R):
-                            
-                            # Hash function
-                            h_f = np.random.permutation(
-                                np.arange(H * W)
-                            )
+                        # Hash function
+                        h_f = np.random.permutation(
+                            np.arange(H * W)
+                        )
 
-                            # Permutation value
-                            p_vals = [
-                                h_f[row * W + col]
-                                for row, col in zip(act_r, act_c)
-                            ]
+                        # Permutation value
+                        p_vals = [
+                            h_f[row * W + col]
+                            for row, col in zip(act_r, act_c)
+                        ]
 
-                            # Min hash value
-                            if len(p_vals) == 0:
-                                h = -1
-                            else:
-                                h = np.min(p_vals)
+                        # Min hash value
+                        if len(p_vals) == 0:
+                            h = -1
+                        else:
+                            h = np.min(p_vals)
 
-                            # Add min hash value to self.hash_vals
-                            neuron = '{}-{}'.format(self.blk, n)
-                            hash_val_img_i = self.group_img_i[group]
-                            self.hash_vals[group][neuron][
-                                hash_val_img_i, b, r
-                            ] = h
+                        # Add min hash value to self.hash_vals
+                        neuron = '{}-{}'.format(self.blk, n)
+                        hash_val_img_i = self.group_img_i[group]
+                        self.hash_vals[group][neuron][
+                            hash_val_img_i, hash_i
+                        ] = h
+
                 self.group_img_i[group] += 1
 
         self.batch_idx += 1
@@ -602,6 +601,7 @@ class LSH:
         file_path = self.data_path.get_data_path(
             item, data_or_time='time'
         )
+        file_path.replace('.txt', '-{}.txt'.format(self.blk))
 
         with open(file_path, 'w') as f:
             f.write(time_log + '\n')
