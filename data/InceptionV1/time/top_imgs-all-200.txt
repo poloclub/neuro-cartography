@@ -1,0 +1,6 @@
+mixed4c_5x5
+Max act
+total_time: 6680.39
+gpu_time: 6680.02
+cpu_time: 0.37
+Find top imgs: 4.00 sec
