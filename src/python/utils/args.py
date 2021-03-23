@@ -107,13 +107,13 @@ def parse_args():
     )
     parser.add_argument(
         '--band_size_top_imgs', 
-        default=2, 
+        default=3, 
         type=int,
         help='Band size in preprocessing'
     )
     parser.add_argument(
         '--num_bands_top_imgs', 
-        default=100, 
+        default=2000, 
         type=int,
         help='Number of bands in preprocessing'
     )
