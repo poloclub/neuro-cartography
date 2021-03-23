@@ -115,7 +115,7 @@ class Main {
   get_emb_file_path() {
     let emb_paths = []
     for (let i of [0, 1, 2, 3, 4, 5]) {
-      let file_path = `${data_path['emb_path']}/embedding_2d-30-1-10-0.01-${i}.json`
+      let file_path = `${data_path['emb_path']}/embedding_2d-30-5-10-0.01-${i}.json`
       emb_paths.push(file_path)
     }
     return emb_paths
