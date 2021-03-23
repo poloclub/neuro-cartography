@@ -33,6 +33,13 @@ def parse_args():
         type=str,                
         help='CNN model name'
     )
+
+    parser.add_argument(
+        '--compression_ratio', 
+        default=5, 
+        type=int,                
+        help='compression_ratio (5 means 0.5)'
+    )
     
     # GPU
     parser.add_argument(
@@ -94,19 +101,19 @@ def parse_args():
     '''
     parser.add_argument(
         '--num_top_imgs', 
-        default=100, 
+        default=200, 
         type=int,
         help='Number of top images'
     )
     parser.add_argument(
         '--band_size_top_imgs', 
-        default=2, 
+        default=3, 
         type=int,
         help='Band size in preprocessing'
     )
     parser.add_argument(
         '--num_bands_top_imgs', 
-        default=100, 
+        default=2000, 
         type=int,
         help='Number of bands in preprocessing'
     )
@@ -133,9 +140,9 @@ def parse_args():
     '''
     parser.add_argument(
         '--num_hash_per_img', 
-        default=10, 
+        default=300, 
         type=int,
-        help='Number of hash functions per image'
+        help='Number of hash per images'
     )
     parser.add_argument(
         '--patch_size', 

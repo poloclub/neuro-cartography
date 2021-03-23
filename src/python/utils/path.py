@@ -35,6 +35,7 @@ class DataPath:
      |   +-- hash_order/
      |   +-- hash_value/
      |   +-- time/
+     |   +-- model/ (When the model is compressed)
      |
      +-- tfrec/
      |   |
@@ -120,6 +121,7 @@ class DataPath:
                 ]
             },
             'permutation': {
+                # TODO: Remove this
                 'hash_array': [
                     self.args.H,
                     self.args.W
@@ -132,8 +134,7 @@ class DataPath:
             'lsh': {
                 'hash_value': [
                     self.args.synset,
-                    self.args.band_size,
-                    self.args.num_bands
+                    self.args.num_hash_per_img
                 ],
                 'bucket': [
                     self.args.synset,
@@ -372,7 +373,6 @@ class DataPath:
             }
 
 
-
     def gen_permutation_path(self):
         '''
         Generate data path for activation permutation
@@ -513,6 +513,21 @@ class DataPath:
                     start_dir, 'time', apdx
                 )
             }
+
+
+    def gen_comp_model_path(self):
+        '''
+        Generate compressed model path
+        '''
+
+        start_dir = '{}/{}'.format(
+            self.base_dir, self.args.model_name
+        )
+
+        self.paths['compressed_model'] = \
+            '{}/model/saved_model_{}.pb'.format(
+                start_dir, self.args.compression_ratio
+            )
 
 
     def gen_data_path(self, category):
