@@ -121,6 +121,7 @@ class DataPath:
                 ]
             },
             'permutation': {
+                # TODO: Remove this
                 'hash_array': [
                     self.args.H,
                     self.args.W
@@ -133,8 +134,7 @@ class DataPath:
             'lsh': {
                 'hash_value': [
                     self.args.synset,
-                    self.args.band_size,
-                    self.args.num_bands
+                    self.args.num_hash_per_img
                 ],
                 'bucket': [
                     self.args.synset,
