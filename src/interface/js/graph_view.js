@@ -24,6 +24,9 @@ import {
 import {
   ExampleView
 } from './example_view.js'
+import {
+  SearchBar
+} from './search_bar.js'
 
 
 export class GraphViewHeader {
@@ -123,6 +126,23 @@ export class GraphViewHeader {
 
   }
 
+  parse_synset_data(data) {
+    let synset_data = []
+    for (let d of data) {
+      synset_data.push(
+        {
+          'id': d['synset'],
+          'text': fst_letter_capital(d['name'].replace(/_/g, ' '))
+        }
+      )
+    }
+    return synset_data
+
+    function fst_letter_capital(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1)
+    }
+  }
+
   add_class_info() {
 
     let this_class = this
@@ -141,32 +161,40 @@ export class GraphViewHeader {
       class_title.className = 'graph_view-header-title'
       class_selection.appendChild(class_title)
 
-      let dropdown = new Dropdown('class-selection')
-      dropdown.gen_dropdown('All classes')
-      dropdown.add_dropdown_menu_item(
-        'All_classes',
-        this_class.format_class_label('All_classes'),
-        {
-          'mouseover': function() {  },
-          'mouseout': function() {  },
-          'click': function() {  }
-        }
-      )
+      console.log(this_class.parse_synset_data(data))
 
-      // Add dropdown menu
-      for (let d of data) {
-        dropdown.add_dropdown_menu_item(
-          d['synset'],
-          this_class.format_class_label(d['name']),
-          {
-            'mouseover': function() {  },
-            'mouseout': function() {  },
-            'click': function() {  }
-          }
-        )
-      }
+      // TODO: Make this a search bar
+      let search_bar = new SearchBar(
+        'class-search',
+        'class-search',
+        'Kit fox',
+        {
+          'mouseover': function() {},
+          'mouseout': function() {},
+          'click': function() {}
+        },
+        this_class.parse_synset_data(data)
+      )
       
-      class_selection.appendChild(dropdown.get_dropdown())  
+      class_selection.appendChild(search_bar.get_search_bar())  
+      
+    //   let dropdown = new Dropdown('class-selection')
+    //   dropdown.gen_dropdown('Kit fox')
+
+    //   // Add dropdown menu
+    //   for (let d of data) {
+    //     dropdown.add_dropdown_menu_item(
+    //       d['synset'],
+    //       this_class.format_class_label(d['name']),
+    //       {
+    //         'mouseover': function() {  },
+    //         'mouseout': function() {  },
+    //         'click': function() {  }
+    //       }
+    //     )
+    //   }
+      
+    //   class_selection.appendChild(dropdown.get_dropdown())  
     })
 
   }

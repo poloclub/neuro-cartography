@@ -52,7 +52,7 @@
   transform: translate(-3px, 3px);
   -webkit-appearance: none;
   outline: none;
-  background: var(--brigt_grapy);
+  background: var(--brigt_gray);
   width: 120px;
   height: 3px;
   cursor: pointer;

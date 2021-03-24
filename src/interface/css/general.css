@@ -24,7 +24,7 @@ body {
 :root {
   --gray: rgb(55, 55, 55);
   --gray_text: rgb(55, 55, 55);
-  --brigt_grapy: #bbbbbb;
+  --brigt_gray: #bbbbbb;
   --bright_gray_text: #CCCCCC;
   --bright_gray_border: #CCCCCC;
   --bright_gray_bg: rgb(249, 249, 249);

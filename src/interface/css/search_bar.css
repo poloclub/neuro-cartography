@@ -1,0 +1,51 @@
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+
+.class-search-input {
+  background-color:white;
+  width: 100%;
+  border: 1px solid var(--bright_gray_border);
+  color: 1px solid var(--gray_text);
+  border-radius: 3px;
+  padding: 3px;
+  padding-left: 10px;
+  padding-right: 10px;
+  transform: translate(0px, 2pxs);
+}
+
+.autocomplete-submit {
+  display: none;
+}
+
+.autocomplete-items {
+  overflow: scroll;
+  max-height: 300px;
+  top: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  border: 1px solid var(--bright_gray_text);
+  border-radius: 3px;
+  transform: translate(0px, 10px);
+}
+
+.autocomplete-items div {
+  padding: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+  background-color: white;
+}
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+  background-color: var(--bright_gray_text); 
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
+}
