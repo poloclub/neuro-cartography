@@ -41,6 +41,8 @@ class LSH:
         self.N = args.num_hash_per_img
         self.R = args.band_size
         self.B = args.num_bands
+        self.ratio = args.thr_ratio
+        self.num_sample_imgs = args.num_sample_imgs
 
         # Global variables
         self.batch_idx = 0
@@ -204,7 +206,7 @@ class LSH:
         * output
             - N/A
         '''
-
+        
         # Check time
         tic = time()
 
@@ -309,7 +311,7 @@ class LSH:
                 n_pair = key
                 cnt = stats[g][n_pair]
 
-                if cnt > 0:
+                if cnt > self.ratio * self.num_sample_imgs:
 
                     # Find groups to merge
                     groups_to_merge = self.find_groups_to_merge_CO_OC(
@@ -452,7 +454,11 @@ class LSH:
             data = json.load(f)
         data = {
             group:
-            list(map(int, data[group]))
+            np.random.choice(
+                list(map(int, data[group])),
+                self.num_sample_imgs,
+                replace=False
+            )
             for group in data
         }
 
@@ -560,13 +566,17 @@ class LSH:
                         int,
                         data[group][neuron].split(',')
                     )))
-                num_imgs = len(arr) // (self.B * self.R)
 
                 arr = arr.reshape(
-                        num_imgs,
-                        self.B,
-                        self.R
+                        self.num_sample_imgs,
+                        self.N
                     )
+                arr = arr[:, : (self.B * self.R)]
+                arr = arr.reshape(
+                    self.num_sample_imgs,
+                    self.B,
+                    self.R
+                )
                 self.hash_vals[group][neuron] = arr
 
 
