@@ -11,6 +11,10 @@ export var embedding_setup = {
   'epoch': 5
 }
 
+export var selected_class = {
+  'synset': 'n02119789'
+}
+
 export var selected_groups = {
   'groups': new Set()
 }

@@ -9,8 +9,8 @@
   font-size: 15px;
   color: var(--gray_text);
   height: 40px;
-  padding-top: 13px;
-  padding-bottom: 13px;
+  padding-top: 12px;
+  padding-bottom: 14px;
   padding-left: 20px;
   padding-right: 20px;
   background-color: white;
@@ -33,6 +33,11 @@
 .graph_view-header-title {
   padding-right: 15px;
   font-weight: bold;
+  padding-bottom: 3px;
+}
+
+#graph_view-header-class-title {
+  padding-bottom: 0px;
 }
 
 #dropdown-menu-class-selection {

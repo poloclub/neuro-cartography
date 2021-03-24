@@ -5,6 +5,9 @@ import {
   InceptionV1
 } from './model.js'
 import {
+  synsets
+} from './synsets.js'
+import {
   EmbeddingHeader,
   EmbeddingView
 } from './embedding_view.js'
@@ -30,7 +33,7 @@ class Main {
     this.paths = this.get_data_path_list()
 
     // Data
-    this.neuron_data = {}
+    this.node_data = {}
     this.emb_data = {}
 
     // Views
@@ -50,7 +53,7 @@ class Main {
       function(data) {
 
         // Load and parse data
-        this_class.parse_neuron_data(data.slice(6))
+        this_class.parse_node_data(data.slice(6))
 
         // Generate embebdding header
         this_class.gen_embedding_header()
@@ -79,7 +82,7 @@ class Main {
 
   generate_embedding_view() {
     this.embedding = new EmbeddingView(
-      'embedding_view', this.emb_data, this.neuron_data
+      'embedding_view', this.emb_data, this.node_data
     )
     this.embedding.draw_dots()
   }
@@ -91,7 +94,7 @@ class Main {
 
   generate_graph_view() {
     this.graph_view = new GraphView(
-      this.neuron_data, this.model
+      this.node_data, this.model
     )
     this.graph_view.draw_graph()
   }
@@ -101,15 +104,15 @@ class Main {
   // Data path
   ///////////////////////////////////////////////////////
 
-  get_neuron_file_path() {
-    let neuron_paths = []
-    let dir_path = data_path['neuron_group_path']
-    for (let blk of this.model.BLKS) {
-      neuron_paths.push(
-        `${dir_path}/buckets-${blk}.json`
+  get_node_file_path() {
+    let node_paths = []
+    let dir_path = `${data_path['graph_dir']}/node/`
+    for (let synset of synsets) {
+      node_paths.push(
+        `${dir_path}/node-${synset}.json`
       )
     }
-    return neuron_paths
+    return node_paths
   }
 
   get_emb_file_path() {
@@ -127,18 +130,18 @@ class Main {
       this.get_emb_file_path()
     )
     path_list = path_list.concat(
-      this.get_neuron_file_path()
+      this.get_node_file_path()
     )
     return path_list
   }
 
-  parse_neuron_data(data) {
-    let i = 0
-    for (let blk_data of data) {
-      let blk = this.model.BLKS[i]
-      this.neuron_data[blk] = blk_data
-      i += 1
+  parse_node_data(data) {
+
+    for (let i in synsets) {
+      let synset = synsets[i]
+      this.node_data[synset] = data[i]
     }
+
   }
 
 }

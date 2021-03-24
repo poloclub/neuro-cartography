@@ -1,7 +1,6 @@
 
 export class SearchBar {
 
-
   constructor(id, class_name, default_txt, functions, items) {
     this.form = document.createElement('form')
     this.id = id
@@ -66,7 +65,7 @@ export class SearchBar {
       item_div.addEventListener('click', function(e) {
         this_class.search_bar_input.value = item['text']
         this_class.close_item_list()
-        // TODO: Update data of the selected class
+        this_class.functions['click'](item['id'])
       })
       items.appendChild(item_div)
     }

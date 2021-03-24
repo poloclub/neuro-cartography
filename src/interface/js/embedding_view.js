@@ -3,7 +3,7 @@ import { get_css_var } from './utils.js'
 import { ExampleViewNeuron } from './example_view.js'
 import { Dropdown } from './dropdown.js'
 import { emb_style } from './constant.js'
-import { embedding_setup, selected_groups } from './variable.js'
+import { embedding_setup, selected_class, selected_groups } from './variable.js'
 
 ////////////////////////////////////////////////////////////
 // Embedding
@@ -11,7 +11,7 @@ import { embedding_setup, selected_groups } from './variable.js'
 
 export class EmbeddingView {
   
-  constructor(parent_id, emb_data, neuron_data) {
+  constructor(parent_id, emb_data, node_data) {
 
     // Embeddng view size
     this.emb_H = 467
@@ -21,7 +21,7 @@ export class EmbeddingView {
     this.parent = d3.select(`#${parent_id}`)
 
     // Data
-    this.neuron_data = neuron_data
+    this.node_data = node_data
     this.emb_data = emb_data
     this.neuron_to_group = this.get_neuron_group_mapping()
 
@@ -38,9 +38,12 @@ export class EmbeddingView {
 
   get_neuron_group_mapping() {
     let n2g = {}
-    for (let blk in this.neuron_data) {
-      for (let g_num in this.neuron_data[blk]) {
-        for (let neuron of this.neuron_data[blk][g_num]) {
+    let nodes_of_class = this.node_data[
+      selected_class['synset']
+    ]
+    for (let blk in nodes_of_class) {
+      for (let g_num in nodes_of_class[blk]) {
+        for (let neuron of nodes_of_class[blk][g_num]['group']) {
           n2g[neuron] = [blk, g_num].join('-')
         }
       }
