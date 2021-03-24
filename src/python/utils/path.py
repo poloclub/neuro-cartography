@@ -139,7 +139,8 @@ class DataPath:
                 'bucket': [
                     self.args.synset,
                     self.args.band_size,
-                    self.args.num_bands
+                    self.args.num_bands,
+                    self.args.thr_ratio
                 ],
             },
             'graph': {
@@ -430,8 +431,8 @@ class DataPath:
         )
         self.paths[item] = {
             'data': path,
-            'time': '{}/{}/{}.txt'.format(
-                start_dir, 'time', apdx
+            'time': '{}/{}/{}-{}.txt'.format(
+                start_dir, 'time', self.args.blk, apdx
             )
         }
 

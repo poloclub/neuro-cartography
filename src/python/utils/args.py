@@ -162,15 +162,27 @@ def parse_args():
     '''
     parser.add_argument(
         '--band_size', 
-        default=10, 
+        default=5, 
         type=int,
         help='Band size in LSH'
     )
     parser.add_argument(
         '--num_bands', 
-        default=20, 
+        default=30, 
         type=int,
         help='Number of bands in LSH'
+    )
+    parser.add_argument(
+        '--num_sample_imgs', 
+        default=100, 
+        type=int,
+        help='Number of sample images in LSH'
+    )
+    parser.add_argument(
+        '--thr_ratio', 
+        default=0.03, 
+        type=float,
+        help='Threshold of ratio'
     )
     parser.add_argument(
         '--thr_of_non_act', 
