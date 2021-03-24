@@ -25,7 +25,7 @@ export class SearchBar {
     search_bar.className = `autocomplete ${this.class_name}`
     this.form.appendChild(search_bar)
     this.search_bar_div = search_bar
-    
+
     let search_bar_input = document.createElement('input')
     search_bar_input.id = `${this.id}-input`
     search_bar_input.type = 'text'

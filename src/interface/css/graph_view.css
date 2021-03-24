@@ -26,6 +26,10 @@
   padding-right: 20px;
 }
 
+#graph_view-header-mode {
+  padding-left: 50px;
+}
+
 .graph_view-header-title {
   padding-right: 15px;
   font-weight: bold;

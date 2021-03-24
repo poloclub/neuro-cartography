@@ -3,16 +3,23 @@
   display: inline-block;
 }
 
-.class-search-input {
+#class-search-input {
   background-color:white;
   width: 100%;
   border: 1px solid var(--bright_gray_border);
   color: 1px solid var(--gray_text);
   border-radius: 3px;
   padding: 3px;
-  padding-left: 10px;
+  padding-left: 20px;
   padding-right: 10px;
-  transform: translate(0px, 2pxs);
+  transform: translate(0px, 2px);
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)), 
+    url(../../../img/search.jpeg);
+  background-repeat: no-repeat;
+  background-size: 20px 20px; 
+  font-family: 'Barlow', sans-serif;
+  font-size: 15px;
 }
 
 .autocomplete-submit {
@@ -29,6 +36,8 @@
   border: 1px solid var(--bright_gray_text);
   border-radius: 3px;
   transform: translate(0px, 10px);
+  width: 188px;
+  font-size: 13px;
 }
 
 .autocomplete-items div {
