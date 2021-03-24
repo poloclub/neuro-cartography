@@ -614,7 +614,8 @@ export class GraphView {
 
   mouseleave_node(node) {
 
-    let [blk, group] = node.id.split('-')
+    let [blk, group] = node.id.split('-g-')
+    group = `g-` + group
     let group_id = `${blk}-${group}`
     shown_group['group'] = 'None'
 
@@ -641,7 +642,8 @@ export class GraphView {
 
   click_node(node) {
 
-    let [blk, group] = node.id.split('-')
+    let [blk, group] = node.id.split('-g-')
+    group = `g-${group}`
 
     if (selected_groups['groups'].has(node.id)) {
 
