@@ -361,8 +361,9 @@ export class GraphViewHeader {
       })
 
     // Update wrapper size and location
+    this.update_block_wrap()
 
-    // Update connection location
+    // TODO: Update connection location
 
   }
 
@@ -426,6 +427,40 @@ export class GraphViewHeader {
       this.blk_y[`${layer}_3x3`] = y + graph_style['y_gap']
       this.blk_y[`${layer}_5x5`] = y + graph_style['y_gap']
       y += (2 * graph_style['y_gap'])
+    }
+  }
+
+  update_block_wrap() {
+
+    let this_class = this
+    let H = graph_style['blk_bg']['height']
+    let h = graph_style['node_h']
+
+    for (let blk of this.model.BLKS) {
+
+      d3.select(`#blk-bg-${blk}`)
+        .transition()
+        .duration(1000)
+        .attr('x', this_class.blk_x[blk] - H / 2 + h / 2)
+        .attr('width', get_blk_bg_w(blk))
+
+      d3.select(`#blk-${blk}`)
+        .transition()
+        .duration(1000)
+        .attr('x', this_class.blk_x[blk])
+        
+    }
+
+    function get_blk_bg_w(blk) {
+      let W = graph_style['node_w'] + graph_style['x_gap']
+      let num_neuron = this_class.num_nodes[blk]
+      let H = graph_style['blk_bg']['height']
+      let h = graph_style['node_h']
+      if (num_neuron == 0) {
+        return 0
+      } else {
+        return W * num_neuron + H - h - graph_style['x_gap']
+      }
     }
   }
 
@@ -752,18 +787,33 @@ export class GraphView {
       ex_view.gen_example_view()
     }
 
+    // Example view size
+    if (this.len(neurons) > 1) {
+      d3.select(`#ex-${node.id}`)
+        .style('height', '400px')
+    } 
+
     // Turn off all others first
     d3.selectAll('.example-view-wrapper')
       .style('display', 'none')
     d3.selectAll('.node')
       .attr('fill', get_css_var('--gray'))
 
-    // Show example patches of neurons    
+    // Example view scale
+    let curr_scale = d3.select('#graph_view-g').attr('transform')
+    curr_scale = parseFloat(curr_scale.split('scale(')[1].slice(0, -1)) 
+
+    // Show example patches of neurons
+
+    // TODO: correct lseft and top
     d3.select(`#ex-${blk}-${group}`)
       .style('display', 'block')
-      .style('left', (d3.event.pageX + 10) + 'px')		
-      .style('top', (d3.event.pageY - 10) + 'px')
+      .style('left', (d3.event.pageX) + 'px')
+      .style('top', (d3.event.pageY) + 'px')
+      .style('transform', `scale(${curr_scale * 5})`)
     shown_group['group'] = `${blk}-${group}`
+
+    
 
     // Turn off other embeddings first
     d3.selectAll('.emb-dot')
@@ -780,6 +830,7 @@ export class GraphView {
     // Highlight node
     d3.select(`#${blk}-${group}`)
       .attr('fill', get_css_var('--hotpink'))
+
   }
 
   mouseleave_node(node) {
