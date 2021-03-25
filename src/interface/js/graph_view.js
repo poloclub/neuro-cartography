@@ -163,7 +163,7 @@ export class GraphViewHeader {
       let search_bar = new SearchBar(
         'class-search',
         'class-search',
-        'Kit fox',
+        'Maltese dog',
         {
           'mouseover': function() {},
           'mouseout': function() {},
@@ -535,8 +535,9 @@ export class GraphView {
 
   reload_graph() {
 
+    console.log(this.node_data[selected_class['synset']])
+
     // Refresh views
-    console.log(selected_class['synset'])
     d3.selectAll('.node').remove()
     d3.selectAll('.edge').remove()
     selected_groups['groups'] = new Set()
