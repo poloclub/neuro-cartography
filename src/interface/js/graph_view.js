@@ -3,7 +3,7 @@ import {
   data_path, graph_style, cascade_style, emb_style 
 } from './constant.js'
 import {
-  shown_group, mode, selected_groups, selected_class
+  shown_group, mode, selected_groups, selected_class, filter_nodes
 } from './variable.js'
 import { Dropdown } from './dropdown.js'
 import { get_css_var } from './utils.js'
@@ -14,8 +14,14 @@ import { Slider } from './slider.js'
 
 export class GraphViewHeader {
 
-  constructor(node_range) {
+  constructor(node_range, model, node_data) {
+    this.model = model
+    this.BLKS = model.BLKS
     this.node_range = node_range
+    this.node_data = node_data
+    this.num_nodes = {}
+    this.blk_x = {}
+    this.blk_y = {}
   }
 
   gen_header() {
@@ -24,6 +30,7 @@ export class GraphViewHeader {
     this.add_dataset()
     this.add_class_info()
     this.add_mode()
+    this.set_layer_layout_y()
     this.add_filter_slider()
   }
 
@@ -305,14 +312,15 @@ export class GraphViewHeader {
     filter_div.appendChild(title)
 
     // Filter slider
+    let this_class = this
     let range = this.node_range[selected_class['synset']]
     let slider = new Slider(
       'node-filter',
       'slider',
-      range,
-      (range[0] + range[1]) / 2,
+      [filter_nodes['cnt_min'], filter_nodes['cnt_max']],
+      filter_nodes['cnt_thr'],
       function(selected_val) {
-        console.log(selected_val)
+        this_class.update_node_with_filtering(selected_val)
       }
     )
     filter_div.appendChild(slider.get_slider())
@@ -320,14 +328,105 @@ export class GraphViewHeader {
 
   update_node_with_filtering(selected_val) {
 
+    // Update selected value
+    filter_nodes['cnt_thr'] = selected_val
+
     // Count the number of nodes to show
+    this.update_num_nodes()
 
     // Update x scale
+    this.set_group_layout_x()
 
     // Update node location
+    let W = graph_style['node_w'] + graph_style['x_gap']
+    let this_class = this
+    d3.selectAll('.node')
+      .transition()
+      .duration(1000)
+      .attr('x', d => {
+        let blk = d[0].split('-')[1]
+        let i = parseInt(d[0].split('-')[2])
+        let x = this_class.blk_x[blk]
+        return x + i * W
+      })
+      .style('display', d => {
+        let blk = d[0].split('-')[1]
+        let i = parseInt(d[0].split('-')[2])
+        let n = this_class.num_nodes[blk]
+        if (i < n) {
+          return 'inline-block'
+        } else {
+          return 'none'
+        }
+      })
+
+    // Update wrapper size and location
 
     // Update connection location
 
+  }
+
+  update_num_nodes() {
+
+    let thr = filter_nodes['cnt_thr'] * 100
+    
+    for (let blk of this.BLKS) {
+      let blk_groups = this.node_data[selected_class['synset']][blk]
+      let blk_i = 0
+      for (let g in blk_groups) {
+        let cnt = blk_groups[g]['cnt']
+        if (cnt > thr) {
+          blk_i = blk_i + 1
+        }
+      }
+      this.num_nodes[blk] = blk_i
+    }
+
+  }
+
+  set_group_layout_x() {
+
+    let W = graph_style['node_w'] + graph_style['x_gap']
+    let this_class = this
+
+    for (let layer of this.model.LAYERS) {
+
+      // Layer block
+      let num_neuron_layer = this_class.num_nodes[layer]
+      this.blk_x[layer] = - W * parseInt(num_neuron_layer / 2)
+
+      // Ignore mixed3a, as we do not use mixed_3x3 and mixed_5x5
+      if (layer == 'mixed3a') {
+        continue
+      }
+
+      // 3x3 block
+      let blk_3x3 = `${layer}_3x3`
+      let num_neuron_3x3 = this_class.num_nodes[blk_3x3]
+      this.blk_x[blk_3x3] = 
+        this.blk_x[layer] - W * num_neuron_3x3
+        - graph_style['blk_gap']
+
+      // 5x5 block
+      let blk_5x5 = `${layer}_5x5`
+      this.blk_x[blk_5x5] = 
+        this.blk_x[layer] + W * num_neuron_layer
+        + graph_style['blk_gap']
+
+    }
+  }
+
+  set_layer_layout_y() {
+    let y = 0
+    for (let layer of this.model.REV_LAYERS) {
+      this.blk_y[layer] = y
+      if (layer == 'mixed3a') {
+        continue
+      }
+      this.blk_y[`${layer}_3x3`] = y + graph_style['y_gap']
+      this.blk_y[`${layer}_5x5`] = y + graph_style['y_gap']
+      y += (2 * graph_style['y_gap'])
+    }
   }
 
 }
@@ -337,18 +436,43 @@ export class GraphView {
 
   constructor(node_data, node_range, model) {
 
-    // Data
-    this.node_data = node_data
-    this.node_range = node_range,
-    console.log(this.node_data)
-    console.log(this.node_range)
-
     // Model
     this.model = model
+    this.BLKS = model.BLKS
+
+    // Data
+    this.node_data = node_data
+    console.log(this.node_data[selected_class['synset']])
+    this.node_range = node_range
+    this.num_nodes = {}
+    this.update_num_nodes()
     
     // Layout
     this.blk_x = {}
     this.blk_y = {}
+
+  }
+
+  ///////////////////////////////////////////////////////
+  // Parse data
+  ///////////////////////////////////////////////////////
+
+  update_num_nodes() {
+
+    let thr = filter_nodes['cnt_thr'] * 100
+    let this_class = this
+    
+    for (let blk of this.BLKS) {
+      let blk_groups = this.node_data[selected_class['synset']][blk]
+      let blk_i = 0
+      for (let g in blk_groups) {
+        let cnt = blk_groups[g]['cnt']
+        if (cnt > thr) {
+          blk_i = blk_i + 1
+        }
+      }
+      this_class.num_nodes[blk] = blk_i
+    }
 
   }
 
@@ -424,13 +548,12 @@ export class GraphView {
   set_group_layout_x() {
 
     let W = graph_style['node_w'] + graph_style['x_gap']
+    let this_class = this
 
     for (let layer of this.model.LAYERS) {
 
       // Layer block
-      let num_neuron_layer = this.len(
-        this.node_data[selected_class['synset']][layer]
-      )
+      let num_neuron_layer = this_class.num_nodes[layer]
       this.blk_x[layer] = - W * parseInt(num_neuron_layer / 2)
 
       // Ignore mixed3a, as we do not use mixed_3x3 and mixed_5x5
@@ -440,16 +563,16 @@ export class GraphView {
 
       // 3x3 block
       let blk_3x3 = `${layer}_3x3`
-      let num_neuron_3x3 = this.len(
-        this.node_data[selected_class['synset']][blk_3x3]
-        )
+      let num_neuron_3x3 = this_class.num_nodes[blk_3x3]
       this.blk_x[blk_3x3] = 
         this.blk_x[layer] - W * num_neuron_3x3
+        - graph_style['blk_gap']
 
       // 5x5 block
       let blk_5x5 = `${layer}_5x5`
       this.blk_x[blk_5x5] = 
         this.blk_x[layer] + W * num_neuron_layer
+        + graph_style['blk_gap']
 
     }
   }
@@ -516,14 +639,19 @@ export class GraphView {
         .text(blk)
         .attr('x', this_class.blk_x[blk])
         .attr('y', this_class.blk_y[blk] - H / 2)
+        .style('display', () => {
+          if (this_class.num_nodes[blk] == 0) {
+            return 'none'
+          } else {
+            return 'inline-block'
+          }
+        })
 
     }
     
     function get_blk_bg_w(blk) {
       let W = graph_style['node_w'] + graph_style['x_gap']
-      let num_neuron = this_class.len(
-        this_class.node_data[selected_class['synset']][blk]
-      )
+      let num_neuron = this_class.num_nodes[blk]
       let H = graph_style['blk_bg']['height']
       let h = graph_style['node_h']
       if (num_neuron == 0) {
@@ -560,6 +688,7 @@ export class GraphView {
   }
 
   draw_nodes_blk(blk) {
+
     let W = graph_style['node_w'] + graph_style['x_gap']
     let x = this.blk_x[blk]
     let y = this.blk_y[blk]
@@ -579,13 +708,24 @@ export class GraphView {
         .attr('class', 'node')
         .attr('rx', 10)
         .attr('ry', 10)
-        .attr('x', function(d, i) {
+        .attr('x', d => {
+          let i = parseInt(d[0].split('-')[2])
           return x + i * W
         })
         .attr('y', y)
         .attr('fill', get_css_var('--gray'))
         .attr('width', graph_style['node_w'])
         .attr('height', graph_style['node_h'])
+        .style('display', d => {
+          let blk = d[0].split('-')[1]
+          let n = this_class.num_nodes[blk]
+          let i = parseInt(d[0].split('-')[2])
+          if (i < n) {
+            return 'inline-block'
+          } else {
+            return 'none'
+          }
+        })
         .on('mouseenter', function() {
           this_class.mouseenter_node(this)
         })

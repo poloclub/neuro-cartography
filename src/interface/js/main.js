@@ -228,7 +228,9 @@ class Main {
 
   generate_graph_view_header() {
     let graph_view_header = new GraphViewHeader(
-      this.node_range
+      this.node_range, 
+      this.model,
+      this.node_data
     )
     graph_view_header.gen_header()
   }
