@@ -1,35 +1,21 @@
+import { Icon } from './icon.js'
 import { 
-  Icon,
-  IconSvg 
-} from './icon.js'
-import { 
-  data_path, 
-  icon_class, 
-  patch_style,
-  graph_style,
-  cascade_style,
-  emb_style
+  data_path, graph_style, cascade_style, emb_style 
 } from './constant.js'
 import {
-  shown_group,
-  mode,
-  selected_groups
+  shown_group, mode, selected_groups, selected_class
 } from './variable.js'
-import { 
-  Dropdown 
-} from './dropdown.js'
-import {
-  get_css_var
-} from './utils.js'
-import {
-  ExampleView
-} from './example_view.js'
+import { Dropdown } from './dropdown.js'
+import { get_css_var } from './utils.js'
+import { ExampleView } from './example_view.js'
+import { SearchBar } from './search_bar.js'
+import { Slider } from './slider.js'
 
 
 export class GraphViewHeader {
 
-  constructor() {
-
+  constructor(node_range) {
+    this.node_range = node_range
   }
 
   gen_header() {
@@ -38,6 +24,7 @@ export class GraphViewHeader {
     this.add_dataset()
     this.add_class_info()
     this.add_mode()
+    this.add_filter_slider()
   }
 
   gen_header_layout() {
@@ -68,6 +55,12 @@ export class GraphViewHeader {
     mode_wrap.id = 'graph_view-header-mode'
     mode_wrap.className = 'graph_view-header-component'
     header.appendChild(mode_wrap)
+
+    // Filter
+    let filter_wrap = document.createElement('div')
+    filter_wrap.id = 'graph_view-header-filter'
+    filter_wrap.className = 'graph_view-header-component'
+    header.appendChild(filter_wrap)
 
   }
 
@@ -123,6 +116,23 @@ export class GraphViewHeader {
 
   }
 
+  parse_synset_data(data) {
+    let synset_data = []
+    for (let d of data) {
+      synset_data.push(
+        {
+          'id': d['synset'],
+          'text': fst_letter_capital(d['name'].replace(/_/g, ' '))
+        }
+      )
+    }
+    return synset_data
+
+    function fst_letter_capital(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1)
+    }
+  }
+
   add_class_info() {
 
     let this_class = this
@@ -141,32 +151,23 @@ export class GraphViewHeader {
       class_title.className = 'graph_view-header-title'
       class_selection.appendChild(class_title)
 
-      let dropdown = new Dropdown('class-selection')
-      dropdown.gen_dropdown('All classes')
-      dropdown.add_dropdown_menu_item(
-        'All_classes',
-        this_class.format_class_label('All_classes'),
+      // TODO: Make this a search bar
+      let search_bar = new SearchBar(
+        'class-search',
+        'class-search',
+        'Kit fox',
         {
-          'mouseover': function() {  },
-          'mouseout': function() {  },
-          'click': function() {  }
-        }
-      )
-
-      // Add dropdown menu
-      for (let d of data) {
-        dropdown.add_dropdown_menu_item(
-          d['synset'],
-          this_class.format_class_label(d['name']),
-          {
-            'mouseover': function() {  },
-            'mouseout': function() {  },
-            'click': function() {  }
+          'mouseover': function() {},
+          'mouseout': function() {},
+          'click': function(click_id) {
+            selected_class['synset'] = click_id
+            // TODO: Update graph
           }
-        )
-      }
+        },
+        this_class.parse_synset_data(data)
+      )
       
-      class_selection.appendChild(dropdown.get_dropdown())  
+      class_selection.appendChild(search_bar.get_search_bar())  
     })
 
   }
@@ -291,15 +292,56 @@ export class GraphViewHeader {
 
   }
 
+  add_filter_slider() {
+
+    // Title
+    let filter_div = document.getElementById(
+      'graph_view-header-filter'
+    )
+    let title = document.createElement('div')
+    title.innerText = 'Filter Nodes'
+    title.id = 'graph_view-header-filter-text'
+    title.className = 'graph_view-header-title'
+    filter_div.appendChild(title)
+
+    // Filter slider
+    let range = this.node_range[selected_class['synset']]
+    let slider = new Slider(
+      'node-filter',
+      'slider',
+      range,
+      (range[0] + range[1]) / 2,
+      function(selected_val) {
+        console.log(selected_val)
+      }
+    )
+    filter_div.appendChild(slider.get_slider())
+  }
+
+  update_node_with_filtering(selected_val) {
+
+    // Count the number of nodes to show
+
+    // Update x scale
+
+    // Update node location
+
+    // Update connection location
+
+  }
+
 }
 
 
 export class GraphView {
 
-  constructor(neuron_data, model) {
+  constructor(node_data, node_range, model) {
 
     // Data
-    this.neuron_data = neuron_data
+    this.node_data = node_data
+    this.node_range = node_range,
+    console.log(this.node_data)
+    console.log(this.node_range)
 
     // Model
     this.model = model
@@ -330,6 +372,10 @@ export class GraphView {
     this.draw_nodes()
     this.auto_zoom_out()
 
+  }
+
+  reload_graph() {
+    // TODO: Reload graph of the selected class
   }
 
   ///////////////////////////////////////////////////////
@@ -382,7 +428,9 @@ export class GraphView {
     for (let layer of this.model.LAYERS) {
 
       // Layer block
-      let num_neuron_layer = this.len(this.neuron_data[layer])
+      let num_neuron_layer = this.len(
+        this.node_data[selected_class['synset']][layer]
+      )
       this.blk_x[layer] = - W * parseInt(num_neuron_layer / 2)
 
       // Ignore mixed3a, as we do not use mixed_3x3 and mixed_5x5
@@ -392,7 +440,9 @@ export class GraphView {
 
       // 3x3 block
       let blk_3x3 = `${layer}_3x3`
-      let num_neuron_3x3 = this.len(this.neuron_data[blk_3x3])
+      let num_neuron_3x3 = this.len(
+        this.node_data[selected_class['synset']][blk_3x3]
+        )
       this.blk_x[blk_3x3] = 
         this.blk_x[layer] - W * num_neuron_3x3
 
@@ -471,7 +521,9 @@ export class GraphView {
     
     function get_blk_bg_w(blk) {
       let W = graph_style['node_w'] + graph_style['x_gap']
-      let num_neuron = this_class.len(this_class.neuron_data[blk])
+      let num_neuron = this_class.len(
+        this_class.node_data[selected_class['synset']][blk]
+      )
       let H = graph_style['blk_bg']['height']
       let h = graph_style['node_h']
       if (num_neuron == 0) {
@@ -514,7 +566,11 @@ export class GraphView {
     let this_class = this
     d3.select('#graph_view-g')
       .selectAll('nodes')
-      .data(Object.entries(this.neuron_data[blk]))
+      .data(
+        Object.entries(
+          this.node_data[selected_class['synset']][blk]
+        )
+      )
       .enter()
         .append('rect')
         .attr('id', function(d) {
@@ -544,12 +600,14 @@ export class GraphView {
   mouseenter_node(node) {   
 
     // Generate example view
-    let [blk, group] = node.id.split('-')
+    let [blk, group] = node.id.split('-g-')
+    group = 'g-' + group
+    let neurons = this.node_data
+      [selected_class['synset']][blk][group]['group']
     let view_id = `ex-${blk}-${group}`
     if (document.getElementById(view_id) == null) {
       let ex_view = new ExampleView(
-        'example_view', blk, group, 'example-view',
-        this.neuron_data[blk][group]
+        'example_view', blk, group, 'example-view', neurons
       )
       ex_view.gen_example_view()
     }
@@ -573,7 +631,7 @@ export class GraphView {
       .attr('r', emb_style['normal-r'])
 
     // Highlight embedding
-    for (let neuron of this.neuron_data[blk][group]) {
+    for (let neuron of neurons) {
       d3.select('#dot-' + neuron)
         .attr('fill', get_css_var('--hotpink'))
         .attr('r', emb_style['hover-r'])
@@ -586,7 +644,8 @@ export class GraphView {
 
   mouseleave_node(node) {
 
-    let [blk, group] = node.id.split('-')
+    let [blk, group] = node.id.split('-g-')
+    group = `g-` + group
     let group_id = `${blk}-${group}`
     shown_group['group'] = 'None'
 
@@ -613,8 +672,6 @@ export class GraphView {
 
   click_node(node) {
 
-    let [blk, group] = node.id.split('-')
-
     if (selected_groups['groups'].has(node.id)) {
 
       // Remove group from the selected groups
@@ -640,6 +697,7 @@ export class GraphView {
       // Show embedding
       d3.selectAll('.emb-dot-group-' + node.id)
         .style('display', 'block')
+        .style('fill', get_css_var('--hotpink'))
 
     }
 

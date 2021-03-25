@@ -16,8 +16,6 @@
 
 .emb-dot {
   cursor: pointer;
-  /* LATER */
-  /* display: none; */
 }
 
 #embedding_header {
@@ -50,25 +48,8 @@
 
 #epoch-slider {
   transform: translate(-3px, 3px);
-  -webkit-appearance: none;
-  outline: none;
-  background: var(--brigt_grapy);
-  width: 120px;
-  height: 3px;
-  cursor: pointer;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 15px;
-  width: 15px;
-  background: var(--gray);
-  border-radius: 50%;
- }
- 
- input[type="range"]::-moz-range-thumb {
-  height: 15px;
-  width: 15px;
-  background: var(--gray);
-  border-radius: 50%;
- }
+#epoch {
+  transform: translate(3px, 6px);
+}

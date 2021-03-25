@@ -1,0 +1,61 @@
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+
+#class-search-input {
+  background-color:white;
+  width: 100%;
+  border: 1px solid var(--bright_gray_border);
+  color: 1px solid var(--gray_text);
+  border-radius: 3px;
+  padding: 3px;
+  padding-left: 20px;
+  padding-right: 10px;
+  transform: translate(0px, 2px);
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)), 
+    url(../../../img/search.jpeg);
+  background-repeat: no-repeat;
+  background-size: 20px 20px; 
+  font-family: 'Barlow', sans-serif;
+  font-size: 15px;
+}
+
+.autocomplete-submit {
+  display: none;
+}
+
+.autocomplete-items {
+  overflow: scroll;
+  max-height: 300px;
+  top: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  border: 1px solid var(--bright_gray_text);
+  border-radius: 3px;
+  transform: translate(0px, 10px);
+  width: 188px;
+  font-size: 13px;
+  display: none;
+}
+
+.autocomplete-items div {
+  padding: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+  background-color: white;
+}
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+  background-color: var(--bright_gray_text); 
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
+}

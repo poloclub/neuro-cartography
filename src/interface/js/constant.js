@@ -8,7 +8,8 @@ export var icon_class = {
   'map': '\uf05b',
   'cascade': 'fas fa-sitemap',
   'dropdown-down': 'fas fa-caret-down',
-  'toggle-on': 'fas fa-toggle-on'
+  'toggle-on': 'fas fa-toggle-on',
+  'search': 'fas fa-search'
 }
 
 export var data_path = {
