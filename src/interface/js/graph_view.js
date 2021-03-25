@@ -642,9 +642,6 @@ export class GraphView {
 
   click_node(node) {
 
-    let [blk, group] = node.id.split('-g-')
-    group = `g-${group}`
-
     if (selected_groups['groups'].has(node.id)) {
 
       // Remove group from the selected groups
@@ -670,6 +667,7 @@ export class GraphView {
       // Show embedding
       d3.selectAll('.emb-dot-group-' + node.id)
         .style('display', 'block')
+        .style('fill', get_css_var('--hotpink'))
 
     }
 

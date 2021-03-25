@@ -34,7 +34,8 @@ class Main {
 
     // Data
     this.node_data = {}
-    this.emb_data = {}
+    this.emb_data = []
+    this.emb_range = {}
 
     // Views
     this.embedding = null
@@ -55,11 +56,9 @@ class Main {
         // Load and parse data
         this_class.parse_node_data(data.slice(6))
 
-        // Generate embebdding header
-        this_class.gen_embedding_header()
-        
         // Generate embedding view
-        this_class.emb_data = data.slice(0, 6)
+        this_class.parse_emb_data(data.slice(0, 6))
+        this_class.gen_embedding_header()
         this_class.generate_embedding_view()
 
         // Generate graph view header
@@ -72,9 +71,45 @@ class Main {
     )
   }
 
+  parse_emb_data(data) {
+
+    // Initialize embedding range
+    let min_xy = {}
+    let max_xy = {}
+    for (let i of [0, 1, 2, 3, 4, 5]) {
+      min_xy[i] = {'x': 1000, 'y': 1000}
+      max_xy[i] = {'x': 0, 'y': 0}
+    }
+
+    // Parse embedding data and get embedding range
+    let neurons = Object.keys(data[0])
+    for (let neuron of neurons) {
+      let d = {}
+      d['neuron'] = neuron
+      for (let i of [0, 1, 2, 3, 4, 5]) {
+        d[i + 1] = data[i][neuron].split(',').map(x => parseFloat(x))
+        min_xy[i]['x'] = d3.min([min_xy[i]['x'], d[i + 1][0]])
+        min_xy[i]['y'] = d3.min([min_xy[i]['y'], d[i + 1][1]])
+        max_xy[i]['x'] = d3.max([max_xy[i]['x'], d[i + 1][0]])
+        max_xy[i]['y'] = d3.max([max_xy[i]['x'], d[i + 1][1]])
+      }
+      this.emb_data.push(d)
+    }
+
+    // Parse embedding range
+    for (let i of [0, 1, 2, 3, 4, 5]) {
+      this.emb_range[i] = {
+        'x': [min_xy[i]['x'], max_xy[i]['x']],
+        'y': [min_xy[i]['y'], max_xy[i]['x']],
+      }
+    }
+
+  }
+
   gen_embedding_header() {
     let emb_header = new EmbeddingHeader(
-      'embedding_header'
+      'embedding_header',
+      this.emb_range
     )
     emb_header.gen_filtering()
     emb_header.gen_epoch()
@@ -82,7 +117,10 @@ class Main {
 
   generate_embedding_view() {
     this.embedding = new EmbeddingView(
-      'embedding_view', this.emb_data, this.node_data
+      'embedding_view', 
+      this.emb_data, 
+      this.emb_range,
+      this.node_data
     )
     this.embedding.draw_dots()
   }
