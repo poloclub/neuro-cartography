@@ -162,13 +162,13 @@ def parse_args():
     '''
     parser.add_argument(
         '--band_size', 
-        default=5, 
+        default=15, 
         type=int,
         help='Band size in LSH'
     )
     parser.add_argument(
         '--num_bands', 
-        default=30, 
+        default=20, 
         type=int,
         help='Number of bands in LSH'
     )
@@ -180,7 +180,7 @@ def parse_args():
     )
     parser.add_argument(
         '--thr_ratio', 
-        default=0.03, 
+        default=0.0, 
         type=float,
         help='Threshold of ratio'
     )

@@ -236,10 +236,12 @@ class LSH:
                             str,
                             self.hash_vals[group][n][img_i, b, :]
                         )))
+                        if '-1' in hash_key:
+                            continue
                         if hash_key not in buckets[group][img_i][b]:
                             buckets[group][img_i][b][hash_key] = []
                         buckets[group][img_i][b][hash_key].append(n)
-
+            
                 # Aggregate buckets by OR approach
                 e2g, g2e, group_number = {}, {}, 0
                 for band_i in buckets[group][img_i]:
@@ -312,6 +314,7 @@ class LSH:
                 cnt = stats[g][n_pair]
 
                 if cnt > self.ratio * self.num_sample_imgs:
+                # if cnt > 0:
 
                     # Find groups to merge
                     groups_to_merge = self.find_groups_to_merge_CO_OC(
