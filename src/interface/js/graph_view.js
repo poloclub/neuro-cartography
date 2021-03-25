@@ -1,38 +1,21 @@
+import { Icon } from './icon.js'
 import { 
-  Icon
-} from './icon.js'
-import { 
-  data_path, 
-  icon_class, 
-  patch_style,
-  graph_style,
-  cascade_style,
-  emb_style
+  data_path, graph_style, cascade_style, emb_style 
 } from './constant.js'
 import {
-  shown_group,
-  mode,
-  selected_groups,
-  selected_class
+  shown_group, mode, selected_groups, selected_class
 } from './variable.js'
-import { 
-  Dropdown 
-} from './dropdown.js'
-import {
-  get_css_var
-} from './utils.js'
-import {
-  ExampleView
-} from './example_view.js'
-import {
-  SearchBar
-} from './search_bar.js'
+import { Dropdown } from './dropdown.js'
+import { get_css_var } from './utils.js'
+import { ExampleView } from './example_view.js'
+import { SearchBar } from './search_bar.js'
+import { Slider } from './slider.js'
 
 
 export class GraphViewHeader {
 
-  constructor() {
-
+  constructor(node_range) {
+    this.node_range = node_range
   }
 
   gen_header() {
@@ -41,6 +24,7 @@ export class GraphViewHeader {
     this.add_dataset()
     this.add_class_info()
     this.add_mode()
+    this.add_filter_slider()
   }
 
   gen_header_layout() {
@@ -71,6 +55,12 @@ export class GraphViewHeader {
     mode_wrap.id = 'graph_view-header-mode'
     mode_wrap.className = 'graph_view-header-component'
     header.appendChild(mode_wrap)
+
+    // Filter
+    let filter_wrap = document.createElement('div')
+    filter_wrap.id = 'graph_view-header-filter'
+    filter_wrap.className = 'graph_view-header-component'
+    header.appendChild(filter_wrap)
 
   }
 
@@ -181,7 +171,6 @@ export class GraphViewHeader {
     })
 
   }
-
 
   format_class_label(s) {
     s = s.replace(/_/g, ' ')
@@ -303,15 +292,56 @@ export class GraphViewHeader {
 
   }
 
+  add_filter_slider() {
+
+    // Title
+    let filter_div = document.getElementById(
+      'graph_view-header-filter'
+    )
+    let title = document.createElement('div')
+    title.innerText = 'Filter Nodes'
+    title.id = 'graph_view-header-filter-text'
+    title.className = 'graph_view-header-title'
+    filter_div.appendChild(title)
+
+    // Filter slider
+    let range = this.node_range[selected_class['synset']]
+    let slider = new Slider(
+      'node-filter',
+      'slider',
+      range,
+      (range[0] + range[1]) / 2,
+      function(selected_val) {
+        console.log(selected_val)
+      }
+    )
+    filter_div.appendChild(slider.get_slider())
+  }
+
+  update_node_with_filtering(selected_val) {
+
+    // Count the number of nodes to show
+
+    // Update x scale
+
+    // Update node location
+
+    // Update connection location
+
+  }
+
 }
 
 
 export class GraphView {
 
-  constructor(node_data, model) {
+  constructor(node_data, node_range, model) {
 
     // Data
     this.node_data = node_data
+    this.node_range = node_range,
+    console.log(this.node_data)
+    console.log(this.node_range)
 
     // Model
     this.model = model

@@ -2,6 +2,7 @@ import { Icon } from './icon.js'
 import { get_css_var } from './utils.js'
 import { ExampleViewNeuron } from './example_view.js'
 import { Dropdown } from './dropdown.js'
+import { Slider } from './slider.js'
 import { emb_style } from './constant.js'
 import { embedding_setup, selected_class, selected_groups } from './variable.js'
 
@@ -166,7 +167,6 @@ export class EmbeddingView {
         .on('mouseout', d => { 
           return this_class.dot_mouseout(d['neuron']) 
         })
-        .style('opacity', 0.3)
         .attr('fill', get_css_var('--gray'))
 
   }
@@ -187,7 +187,6 @@ export class EmbeddingView {
     if (neuron in this.neuron_to_group) {
       d3.selectAll('.emb-dot-group-' + group)
         .attr('fill', get_css_var('--hotpink'))
-        // .style('opacity', 1)
     }
 
     // Generate example view
@@ -290,38 +289,36 @@ export class EmbeddingHeader {
     // Title
     let title = document.createElement('div')
     title.className = 'embedding-header-title'
-    title.innerText = 'Epoch'
+    title.innerText = 'Epoch to Learn Embedding'
     title.style.display = 'inline-block'
     epoch.appendChild(title)
+
+    // Slider
+    let this_class = this
+    let slider = new Slider(
+      'epoch-slider', 
+      'slider',
+      [1, 5],
+      embedding_setup['epoch'],
+      function(selected_epoch) {
+
+        // Update epoch number
+        let epoch_number = document.getElementById('epoch')
+        epoch_number.innerText = selected_epoch * 5
+        embedding_setup['epoch'] = selected_epoch
+        this_class.update_embedding()
+
+      }
+    )
+    let slider_wrap = slider.get_slider()
+    epoch.appendChild(slider_wrap)
 
     // Epoch number
     let number = document.createElement('div')
     number.id = 'epoch'
     number.innerText = embedding_setup['epoch'] * 5
     number.style.display = 'inline-block'
-    epoch.appendChild(number)
-
-    // Slider
-    let slider_wrap = document.createElement('div')
-    let slider = document.createElement('input')
-    slider.id = 'epoch-slider'
-    slider_wrap.className = 'slider'
-    slider.type = 'range'
-    slider.min = 1
-    slider.max = 5
-    slider.value = embedding_setup['epoch']
-    epoch.appendChild(slider_wrap)
-    slider_wrap.appendChild(slider)
-
-    // Slider action
-    let this_class = this
-    slider.oninput = function() {
-      let selected_epoch = parseInt(this.value)
-      let epoch_number = document.getElementById('epoch')
-      epoch_number.innerText = selected_epoch * 5
-      embedding_setup['epoch'] = selected_epoch
-      this_class.update_embedding()
-    }
+    slider_wrap.appendChild(number)
 
   }
 

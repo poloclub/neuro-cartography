@@ -46,3 +46,7 @@
   padding-right: 10px;
   display: none;
 }
+
+.emb-dot {
+  opacity: 0.25;
+}
