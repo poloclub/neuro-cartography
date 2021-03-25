@@ -14,9 +14,10 @@ import { Slider } from './slider.js'
 
 export class GraphViewHeader {
 
-  constructor(node_range, model, node_data) {
+  constructor(node_range, model, node_data, graph_view) {
     this.model = model
     this.BLKS = model.BLKS
+    this.graph_view = graph_view
     this.node_range = node_range
     this.node_data = node_data
     this.num_nodes = {}
@@ -28,7 +29,7 @@ export class GraphViewHeader {
     this.gen_header_layout()
     this.add_model() 
     this.add_dataset()
-    this.add_class_info()
+    this.add_class_search_bar()
     this.add_mode()
     this.set_layer_layout_y()
     this.add_filter_slider()
@@ -140,7 +141,7 @@ export class GraphViewHeader {
     }
   }
 
-  add_class_info() {
+  add_class_search_bar() {
 
     let this_class = this
 
@@ -168,7 +169,7 @@ export class GraphViewHeader {
           'mouseout': function() {},
           'click': function(click_id) {
             selected_class['synset'] = click_id
-            // TODO: Update graph
+            this_class.graph_view.reload_graph()
           }
         },
         this_class.parse_synset_data(data)
@@ -448,7 +449,7 @@ export class GraphViewHeader {
         .transition()
         .duration(1000)
         .attr('x', this_class.blk_x[blk])
-        
+
     }
 
     function get_blk_bg_w(blk) {
@@ -477,7 +478,6 @@ export class GraphView {
 
     // Data
     this.node_data = node_data
-    console.log(this.node_data[selected_class['synset']])
     this.node_range = node_range
     this.num_nodes = {}
     this.update_num_nodes()
@@ -534,7 +534,20 @@ export class GraphView {
   }
 
   reload_graph() {
-    // TODO: Reload graph of the selected class
+
+    // Refresh views
+    console.log(selected_class['synset'])
+    d3.selectAll('.node').remove()
+    d3.selectAll('.edge').remove()
+    selected_groups['groups'] = new Set()
+    d3.selectAll('.emb-dot')
+      .style('fill', get_css_var('--gray'))
+
+    this.update_num_nodes()
+    this.set_group_layout_x()
+    this.draw_nodes()
+    this.update_block_wrap()
+
   }
 
   ///////////////////////////////////////////////////////
@@ -630,6 +643,40 @@ export class GraphView {
       return item.length
     } else {
       return Object.keys(item).length
+    }
+  }
+
+  update_block_wrap() {
+
+    let this_class = this
+    let H = graph_style['blk_bg']['height']
+    let h = graph_style['node_h']
+
+    for (let blk of this.model.BLKS) {
+
+      d3.select(`#blk-bg-${blk}`)
+        .transition()
+        .duration(1000)
+        .attr('x', this_class.blk_x[blk] - H / 2 + h / 2)
+        .attr('width', get_blk_bg_w(blk))
+
+      d3.select(`#blk-${blk}`)
+        .transition()
+        .duration(1000)
+        .attr('x', this_class.blk_x[blk])
+
+    }
+
+    function get_blk_bg_w(blk) {
+      let W = graph_style['node_w'] + graph_style['x_gap']
+      let num_neuron = this_class.num_nodes[blk]
+      let H = graph_style['blk_bg']['height']
+      let h = graph_style['node_h']
+      if (num_neuron == 0) {
+        return 0
+      } else {
+        return W * num_neuron + H - h - graph_style['x_gap']
+      }
     }
   }
 

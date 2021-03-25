@@ -40,6 +40,7 @@ class Main {
 
     // Views
     this.embedding = null
+    this.graph_view = null
 
   }
 
@@ -197,11 +198,11 @@ class Main {
         this_class.gen_embedding_header()
         this_class.generate_embedding_view()
 
-        // Generate graph view header
-        this_class.generate_graph_view_header()
-
         // Generate graph view
         this_class.generate_graph_view()
+
+        // Generate graph view header
+        this_class.generate_graph_view_header()
 
       }
     )
@@ -226,15 +227,6 @@ class Main {
     this.embedding.draw_dots()
   }
 
-  generate_graph_view_header() {
-    let graph_view_header = new GraphViewHeader(
-      this.node_range, 
-      this.model,
-      this.node_data
-    )
-    graph_view_header.gen_header()
-  }
-
   generate_graph_view() {
     this.graph_view = new GraphView(
       this.node_data, 
@@ -244,8 +236,15 @@ class Main {
     this.graph_view.draw_graph()
   }
 
-
-  
+  generate_graph_view_header() {
+    let graph_view_header = new GraphViewHeader(
+      this.node_range, 
+      this.model,
+      this.node_data,
+      this.graph_view
+    )
+    graph_view_header.gen_header()
+  }
 
 }
 
