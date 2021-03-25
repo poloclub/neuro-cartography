@@ -180,7 +180,7 @@ def parse_args():
     )
     parser.add_argument(
         '--thr_ratio', 
-        default=0.0, 
+        default=0.03, 
         type=float,
         help='Threshold of ratio'
     )
