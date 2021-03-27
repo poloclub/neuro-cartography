@@ -90,8 +90,14 @@
   cursor: pointer;
 }
 
+.blk-bg {
+  opacity: 0.3;
+}
+
 .node {
   cursor: pointer;
+  rx: 100;
+  ry: 100;
 }
 
 .edge-path {

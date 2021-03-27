@@ -870,6 +870,7 @@ export class GraphView {
       d3.select('#graph_view-node-g')
         .append('rect')
         .attr('id', `blk-bg-${blk}`)
+        .attr('class', 'blk-bg')
         .attr('x', this_class.blk_x[blk] - H / 2 + h / 2)
         .attr('y', this_class.blk_y[blk] - H / 2 + h / 2)
         .attr('width', get_blk_bg_w(blk))
@@ -884,8 +885,8 @@ export class GraphView {
           }
         })
         .style('opacity', graph_style['blk_bg']['opacity'])
-        .style('rx', 30)
-        .style('ry', 30)
+        .attr('rx', graph_style['blk_bg']['rx'])
+        .attr('ry', graph_style['blk_bg']['ry'])
 
       // Add block name
       d3.select('#graph_view-node-g')
@@ -900,6 +901,15 @@ export class GraphView {
             return 'none'
           } else {
             return 'inline-block'
+          }
+        })
+        .attr('fill', () => {
+          if (blk.includes('3x3')) {
+            return graph_style['blk_name']['color']['3x3']
+          } else if (blk.includes('5x5')) {
+            return graph_style['blk_name']['color']['5x5']
+          } else {
+            return graph_style['blk_name']['color']['normal']
           }
         })
 
@@ -961,8 +971,8 @@ export class GraphView {
           return `${blk}-${d[0]}`
         })
         .attr('class', 'node')
-        .attr('rx', 10)
-        .attr('ry', 10)
+        .attr('rx', 100)
+        .attr('ry', 100)
         .attr('x', d => {
           let i = parseInt(d[0].split('-')[2])
           return x + i * W
@@ -1223,10 +1233,10 @@ export class GraphView {
       x1 = x1 + 0.1
     }
 
-    let c1_x = (3 * x1 + x2) / 4
-    let c1_y = (3 * y1 + y2) / 4 - (y1 - y2) * 0.6
-    let c2_x = (x1 + 3 * x2) / 4
-    let c2_y = (y1 + 3 * y2) / 4 + (y1 - y2) * 0.6
+    let c1_x = x1
+    let c1_y = (y1 + y2) * 0.5
+    let c2_x = x2
+    let c2_y = (y1 + y2) * 0.5
   
     let path = 'M ' + x1 + ',' + y1
     path += ' C ' + c1_x + ' ' + c1_y

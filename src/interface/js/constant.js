@@ -35,7 +35,9 @@ export var graph_style = {
       '3x3': '#b3cde3',
       '5x5': '#ccebc5'
     },
-    'opacity': 0.5
+    'opacity': 0.3,
+    'rx': 100,
+    'ry': 500
   },
   'blk_name': {
     '3x3': {
@@ -49,7 +51,12 @@ export var graph_style = {
     'layer': {
       'mv_x': -230,
       'mv_y': 40
-    }
+    },
+    'color': {
+      'normal': '#fbb4ae',
+      '3x3': '#b3cde3',
+      '5x5': '#bbdab4'
+    },
   },
   'edge_color': 'rgb(200, 200, 200)',
 }
