@@ -24,6 +24,13 @@ body {
   justify-content: center;
 }
 
+#loading_data {
+  position: absolute;
+  transform: translate(750px, -640px);
+  font-size: 40px;
+  font-weight: bold;
+}
+
 .component-title {
   font-size: 18px;
   display: inline-flex;

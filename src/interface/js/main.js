@@ -2,6 +2,9 @@ import {
   data_path
 } from './constant.js'
 import {
+  selected_class
+} from './variable.js'
+import {
   InceptionV1
 } from './model.js'
 import {
@@ -34,7 +37,8 @@ class Main {
 
     // Data
     this.node_data = {}
-    this.node_range = {}
+    this.edge_data = {}
+    this.node_range = []
     this.emb_data = []
     this.emb_range = {}
 
@@ -50,14 +54,17 @@ class Main {
   ///////////////////////////////////////////////////////
 
   get_node_file_path() {
-    let node_paths = []
-    let dir_path = `${data_path['graph_dir']}/node/`
-    for (let synset of synsets) {
-      node_paths.push(
-        `${dir_path}/node-${synset}.json`
-      )
-    }
-    return node_paths
+    let dir_path = `${data_path['graph_dir']}/node`
+    let synset = selected_class['synset']
+    let node_path = `${dir_path}/node-${synset}.json`
+    return [node_path]
+  }
+
+  get_edge_file_path() {
+    let dir_path = `${data_path['graph_dir']}/edge`
+    let synset = selected_class['synset']
+    let edge_path = `${dir_path}/edge-${synset}.json`
+    return [edge_path]
   }
 
   get_emb_file_path() {
@@ -77,6 +84,9 @@ class Main {
     path_list = path_list.concat(
       this.get_node_file_path()
     )
+    path_list = path_list.concat(
+      this.get_edge_file_path()
+    )
     return path_list
   }
 
@@ -88,39 +98,33 @@ class Main {
   parse_node_data(data) {
 
     let this_class = this
+    this.node_data = data
+    
+    // Minimum count (A-mat) of nodes
+    let blk_min_cnt = Object.values(data).map(        
+      (x) => {
+        let blk_nodes = Object.values(x)
+        let blk_cnts = blk_nodes.map(y => y['cnt'])
+        let blk_min = this_class.reduce_min(blk_cnts)
+        return blk_min
+      }
+    )
 
-    for (let i in synsets) {
+    // Maximum count (A-mat) of nodes
+    let blk_max_cnt = Object.values(data).map(        
+      (x) => {
+        let blk_nodes = Object.values(x)
+        let blk_cnts = blk_nodes.map(y => y['cnt'])
+        let blk_max = this_class.reduce_max(blk_cnts)
+        return blk_max
+      }
+    )
 
-      // Node data
-      let synset = synsets[i]
-      this.node_data[synset] = data[i]
-
-      // Minimum count (A-mat) of nodes
-      let blk_min_cnt = Object.values(data[i]).map(        
-        (x) => {
-          let blk_nodes = Object.values(x)
-          let blk_cnts = blk_nodes.map(y => y['cnt'])
-          let blk_min = this_class.reduce_min(blk_cnts)
-          return blk_min
-        }
-      )
-
-      // Maximum count (A-mat) of nodes
-      let blk_max_cnt = Object.values(data[i]).map(        
-        (x) => {
-          let blk_nodes = Object.values(x)
-          let blk_cnts = blk_nodes.map(y => y['cnt'])
-          let blk_max = this_class.reduce_max(blk_cnts)
-          return blk_max
-        }
-      )
-
-      // Node count range
-      this.node_range[synset] = [
-        this_class.reduce_min(blk_min_cnt),
-        this_class.reduce_max(blk_max_cnt)
-      ]
-    }
+    // Node count range
+    this.node_range = [
+      this_class.reduce_min(blk_min_cnt),
+      this_class.reduce_max(blk_max_cnt)
+    ]
 
   }
 
@@ -191,7 +195,8 @@ class Main {
       function(data) {
 
         // Load and parse data
-        this_class.parse_node_data(data.slice(6))
+        this_class.parse_node_data(data[6])
+        // this_class.parse_edge_data(data[7])
 
         // Generate embedding view
         this_class.parse_emb_data(data.slice(0, 6))
@@ -199,10 +204,15 @@ class Main {
         this_class.generate_embedding_view()
 
         // Generate graph view
+        console.log(this_class.node_data)
         this_class.generate_graph_view()
 
         // Generate graph view header
         this_class.generate_graph_view_header()
+
+        // Turn off "Loading data" text
+        d3.select('#loading_data')
+          .style('display', 'none')
 
       }
     )
@@ -238,9 +248,7 @@ class Main {
 
   generate_graph_view_header() {
     let graph_view_header = new GraphViewHeader(
-      this.node_range, 
       this.model,
-      this.node_data,
       this.graph_view
     )
     graph_view_header.gen_header()

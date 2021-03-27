@@ -14,15 +14,10 @@ import { Slider } from './slider.js'
 
 export class GraphViewHeader {
 
-  constructor(node_range, model, node_data, graph_view) {
+  constructor(model, graph_view) {
     this.model = model
     this.BLKS = model.BLKS
     this.graph_view = graph_view
-    this.node_range = node_range
-    this.node_data = node_data
-    this.num_nodes = {}
-    this.blk_x = {}
-    this.blk_y = {}
   }
 
   gen_header() {
@@ -159,7 +154,7 @@ export class GraphViewHeader {
       class_title.className = 'graph_view-header-title'
       class_selection.appendChild(class_title)
 
-      // TODO: Make this a search bar
+      // Search bar
       let search_bar = new SearchBar(
         'class-search',
         'class-search',
@@ -314,7 +309,7 @@ export class GraphViewHeader {
 
     // Filter slider
     let this_class = this
-    let range = this.node_range[selected_class['synset']]
+    let range = this.node_range
     let slider = new Slider(
       'node-filter',
       'slider',
@@ -373,7 +368,7 @@ export class GraphViewHeader {
     let thr = filter_nodes['cnt_thr'] * 100
     
     for (let blk of this.BLKS) {
-      let blk_groups = this.node_data[selected_class['synset']][blk]
+      let blk_groups = this.node_data[blk]
       let blk_i = 0
       for (let g in blk_groups) {
         let cnt = blk_groups[g]['cnt']
@@ -421,12 +416,12 @@ export class GraphViewHeader {
   set_layer_layout_y() {
     let y = 0
     for (let layer of this.model.REV_LAYERS) {
-      this.blk_y[layer] = y
+      this.graph_view.blk_y[layer] = y
       if (layer == 'mixed3a') {
         continue
       }
-      this.blk_y[`${layer}_3x3`] = y + graph_style['y_gap']
-      this.blk_y[`${layer}_5x5`] = y + graph_style['y_gap']
+      this.graph_view.blk_y[`${layer}_3x3`] = y + graph_style['y_gap']
+      this.graph_view.blk_y[`${layer}_5x5`] = y + graph_style['y_gap']
       y += (2 * graph_style['y_gap'])
     }
   }
@@ -481,6 +476,9 @@ export class GraphView {
     this.node_range = node_range
     this.num_nodes = {}
     this.update_num_nodes()
+
+    // Data path
+    this.paths = []
     
     // Layout
     this.blk_x = {}
@@ -496,9 +494,10 @@ export class GraphView {
 
     let thr = filter_nodes['cnt_thr'] * 100
     let this_class = this
-    
+
     for (let blk of this.BLKS) {
-      let blk_groups = this.node_data[selected_class['synset']][blk]
+      let blk_groups = this.node_data[blk]
+      
       let blk_i = 0
       for (let g in blk_groups) {
         let cnt = blk_groups[g]['cnt']
@@ -509,6 +508,31 @@ export class GraphView {
       this_class.num_nodes[blk] = blk_i
     }
 
+  }
+
+  get_node_file_path() {
+    let dir_path = `${data_path['graph_dir']}/node`
+    let synset = selected_class['synset']
+    let node_path = `${dir_path}/node-${synset}.json`
+    return [node_path]
+  }
+
+  get_edge_file_path() {
+    let dir_path = `${data_path['graph_dir']}/edge`
+    let synset = selected_class['synset']
+    let edge_path = `${dir_path}/edge-${synset}.json`
+    return [edge_path]
+  }
+
+  get_data_path_list() {
+    let path_list = []
+    path_list = path_list.concat(
+      this.get_node_file_path()
+    )
+    path_list = path_list.concat(
+      this.get_edge_file_path()
+    )
+    return path_list
   }
 
   ///////////////////////////////////////////////////////
@@ -531,24 +555,42 @@ export class GraphView {
     this.draw_nodes()
     this.auto_zoom_out()
 
+    // Draw connections
+    this.draw_connections()
+
   }
 
   reload_graph() {
 
-    console.log(this.node_data[selected_class['synset']])
+    // Turn on "Loading data" text
+    d3.select('#loading_data')
+      .style('display', 'block')
 
-    // Refresh views
-    d3.selectAll('.node').remove()
-    d3.selectAll('.edge').remove()
-    d3.selectAll('.example-view-wrapper').remove()
-    selected_groups['groups'] = new Set()
-    d3.selectAll('.emb-dot')
-      .style('fill', get_css_var('--gray'))
+    // Update data paths
+    this.pahts = this.get_data_path_list()
 
-    this.update_num_nodes()
-    this.set_group_layout_x()
-    this.draw_nodes()
-    this.update_block_wrap()
+    Promise.all(this.paths.map(file => d3.json(file))).then(
+      function(data) {
+
+        // Refresh views
+        d3.selectAll('.node').remove()
+        d3.selectAll('.edge').remove()
+        d3.selectAll('.example-view-wrapper').remove()
+        selected_groups['groups'] = new Set()
+        d3.selectAll('.emb-dot')
+          .style('fill', get_css_var('--gray'))
+
+        this.update_num_nodes()
+        this.set_group_layout_x()
+        this.draw_nodes()
+        this.update_block_wrap()
+        this.draw_connections()
+
+        // Turn off "Loading data" text
+        d3.select('#loading_data')
+          .style('display', 'none') 
+      }
+    )
 
   }
 
@@ -564,6 +606,8 @@ export class GraphView {
           .on('zoom', function(){
             d3.select('#graph_view-g')
               .attr('transform', d3.event.transform)
+            d3.selectAll('.example-view-wrapper')
+              .style('display', 'none')
           })
       )
   }
@@ -747,7 +791,6 @@ export class GraphView {
 
   }
 
-
   ///////////////////////////////////////////////////////
   // Draw nodes
   ///////////////////////////////////////////////////////
@@ -781,7 +824,7 @@ export class GraphView {
       .selectAll('nodes')
       .data(
         Object.entries(
-          this.node_data[selected_class['synset']][blk]
+          this.node_data[blk]
         )
       )
       .enter()
@@ -826,8 +869,7 @@ export class GraphView {
     // Generate example view
     let [blk, group] = node.id.split('-g-')
     group = 'g-' + group
-    let neurons = this.node_data
-      [selected_class['synset']][blk][group]['group']
+    let neurons = this.node_data[blk][group]['group']
     let view_id = `ex-${blk}-${group}`
     if (document.getElementById(view_id) == null) {
       let ex_view = new ExampleView(
