@@ -465,6 +465,7 @@ export class GraphViewHeader {
   update_connection() {
 
     let this_class = this
+    this.gen_edge_width_scale()
 
     d3.selectAll('.edge-path')
       .transition()
@@ -1250,9 +1251,9 @@ export class GraphView {
 
     // Maximum edge cnt
     let max_edge_cnt = 0
-    for (let blk in this.group_level_conn_data) {
-      for (let group in this.group_level_conn_data[blk]) {
-        let d = this.group_level_conn_data[blk][group]['connection']        
+    for (let blk in this.edge_data) {
+      for (let group in this.edge_data[blk]) {
+        let d = this.edge_data[blk][group]
         if (this.len(d) > 0) {
           let max_cnt = d3.max(Object.values(d))
           max_edge_cnt = d3.max([max_edge_cnt, max_cnt])
@@ -1262,7 +1263,10 @@ export class GraphView {
 
     this.edge_stroke_width_scale = d3.scaleLinear()
       .domain([0, max_edge_cnt])
-      .range([0, 10])
+      .range([
+        graph_style['edge_width_min'], 
+        graph_style['edge_width_max']
+      ])
   }
 
 }

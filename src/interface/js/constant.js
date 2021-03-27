@@ -59,6 +59,8 @@ export var graph_style = {
     },
   },
   'edge_color': 'rgb(200, 200, 200)',
+  'edge_width_min': 3,
+  'edge_width_max': 15
 }
 
 export var patch_style = {
