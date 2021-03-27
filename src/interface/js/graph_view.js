@@ -343,13 +343,13 @@ export class GraphViewHeader {
       .attr('x', d => {
         let blk = d[0].split('-')[1]
         let i = parseInt(d[0].split('-')[2])
-        let x = this_class.blk_x[blk]
+        let x = this_class.graph_view.blk_x[blk]
         return x + i * W
       })
       .style('display', d => {
         let blk = d[0].split('-')[1]
         let i = parseInt(d[0].split('-')[2])
-        let n = this_class.num_nodes[blk]
+        let n = this_class.graph_view.num_nodes[blk]
         if (i < n) {
           return 'inline-block'
         } else {
@@ -360,7 +360,8 @@ export class GraphViewHeader {
     // Update wrapper size and location
     this.update_block_wrap()
 
-    // TODO: Update connection location
+    // Update connection location
+    this.update_connection()
 
   }
 
@@ -369,7 +370,7 @@ export class GraphViewHeader {
     let thr = filter_nodes['cnt_thr'] * 100
     
     for (let blk of this.BLKS) {
-      let blk_groups = this.node_data[blk]
+      let blk_groups = this.graph_view.node_data[blk]
       let blk_i = 0
       for (let g in blk_groups) {
         let cnt = blk_groups[g]['cnt']
@@ -377,7 +378,7 @@ export class GraphViewHeader {
           blk_i = blk_i + 1
         }
       }
-      this.num_nodes[blk] = blk_i
+      this.graph_view.num_nodes[blk] = blk_i
     }
 
   }
@@ -390,8 +391,8 @@ export class GraphViewHeader {
     for (let layer of this.model.LAYERS) {
 
       // Layer block
-      let num_neuron_layer = this_class.num_nodes[layer]
-      this.blk_x[layer] = - W * parseInt(num_neuron_layer / 2)
+      let num_neuron_layer = this_class.graph_view.num_nodes[layer]
+      this_class.graph_view.blk_x[layer] = - W * parseInt(num_neuron_layer / 2)
 
       // Ignore mixed3a, as we do not use mixed_3x3 and mixed_5x5
       if (layer == 'mixed3a') {
@@ -400,15 +401,15 @@ export class GraphViewHeader {
 
       // 3x3 block
       let blk_3x3 = `${layer}_3x3`
-      let num_neuron_3x3 = this_class.num_nodes[blk_3x3]
-      this.blk_x[blk_3x3] = 
-        this.blk_x[layer] - W * num_neuron_3x3
+      let num_neuron_3x3 = this_class.graph_view.num_nodes[blk_3x3]
+      this_class.graph_view.blk_x[blk_3x3] = 
+        this_class.graph_view.blk_x[layer] - W * num_neuron_3x3
         - graph_style['blk_gap']
 
       // 5x5 block
       let blk_5x5 = `${layer}_5x5`
-      this.blk_x[blk_5x5] = 
-        this.blk_x[layer] + W * num_neuron_layer
+      this_class.graph_view.blk_x[blk_5x5] = 
+        this_class.graph_view.blk_x[layer] + W * num_neuron_layer
         + graph_style['blk_gap']
 
     }
@@ -438,19 +439,19 @@ export class GraphViewHeader {
       d3.select(`#blk-bg-${blk}`)
         .transition()
         .duration(1000)
-        .attr('x', this_class.blk_x[blk] - H / 2 + h / 2)
+        .attr('x', this_class.graph_view.blk_x[blk] - H / 2 + h / 2)
         .attr('width', get_blk_bg_w(blk))
 
       d3.select(`#blk-${blk}`)
         .transition()
         .duration(1000)
-        .attr('x', this_class.blk_x[blk])
+        .attr('x', this_class.graph_view.blk_x[blk])
 
     }
 
     function get_blk_bg_w(blk) {
       let W = graph_style['node_w'] + graph_style['x_gap']
-      let num_neuron = this_class.num_nodes[blk]
+      let num_neuron = this_class.graph_view.num_nodes[blk]
       let H = graph_style['blk_bg']['height']
       let h = graph_style['node_h']
       if (num_neuron == 0) {
@@ -459,6 +460,64 @@ export class GraphViewHeader {
         return W * num_neuron + H - h - graph_style['x_gap']
       }
     }
+  }
+
+  update_connection() {
+
+    let this_class = this
+
+    d3.selectAll('.edge-path')
+      .transition()
+      .duration(1000)
+      .attr('d', function(d) {           
+        let group = this.id.split('-conn-')[0] 
+        return gen_path(group, d[0]) 
+      })
+      .style('display', function(d) {
+
+        // Check if prev block is shown
+        let prev_blk = d[0].split('-')[1]
+        let prev_n = parseInt(d[0].split('-')[2])
+        let is_prev_on = 
+          prev_n < this_class.graph_view.num_nodes[prev_blk]
+
+        // Check if curr block is shown
+        let group = this.id.split('-conn-')[0] 
+        let blk = group.split('-')[1]
+        let curr_n = parseInt(group.split('-')[2])
+        let is_curr_on = 
+          curr_n < this_class.graph_view.num_nodes[blk]
+
+        // Display on / off
+        if (is_prev_on && is_curr_on) {
+          return 'inline-block'
+        } else {
+          return 'none'
+        }
+
+      })
+
+      function gen_path(group, prev_group) {
+
+        let blk = group.split('-')[1]
+        let prev_blk = prev_group.split('-')[1]
+        let groun_n = group.split('-')[2]
+        let prev_group_n = prev_group.split('-')[2]
+        groun_n = parseInt(groun_n)
+        prev_group_n = parseInt(prev_group_n)
+  
+        let W = graph_style['node_w'] + graph_style['x_gap']
+        let H = graph_style['node_h'] 
+        let x1 = this_class.graph_view.blk_x[prev_blk] + prev_group_n * W
+        let y1 = this_class.graph_view.blk_y[prev_blk] + 0.05 * H 
+        let x2 = this_class.graph_view.blk_x[blk] + groun_n * W
+        let y2 = this_class.graph_view.blk_y[blk] - 0.05 * H 
+        x1 += graph_style['node_w'] / 2
+        x2 += graph_style['node_w'] / 2
+        y2 += graph_style['node_h'] 
+  
+        return this_class.graph_view.gen_curve(x1, y1, x2, y2)
+      }
   }
 
 }
