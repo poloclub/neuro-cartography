@@ -289,7 +289,7 @@ export class EmbeddingHeader {
     // Title
     let title = document.createElement('div')
     title.className = 'embedding-header-title'
-    title.innerText = 'Epoch to Learn Embedding'
+    title.innerText = 'Epoch to Learn Emb.'
     title.style.display = 'inline-block'
     epoch.appendChild(title)
 

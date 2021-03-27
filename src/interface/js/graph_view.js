@@ -856,9 +856,22 @@ export class GraphView {
     // TODO: correct lseft and top
     d3.select(`#ex-${blk}-${group}`)
       .style('display', 'block')
-      .style('left', (d3.event.pageX) + 'px')
-      .style('top', (d3.event.pageY) + 'px')
-      .style('transform', `scale(${curr_scale * 5})`)
+      .style('left', () => {
+        let x = d3.event.pageX
+        let w = 240
+        let mv_x = -w * (1 - 5 * curr_scale) / 2
+        return (x + mv_x) + 'px'
+      })
+      .style('top', () => {
+        let y = d3.event.pageY
+        let h = 280
+        if (neurons.length > 1) {
+          h = 400
+        }
+        let mv_y = -h * (1 - 5 * curr_scale) / 2 + 50 * curr_scale
+        return (y + mv_y) + 'px'
+      })
+      .style('transform', `scale(${5 * curr_scale})`)
     shown_group['group'] = `${blk}-${group}`
 
     
