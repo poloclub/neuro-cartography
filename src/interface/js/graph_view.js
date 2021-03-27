@@ -1,6 +1,6 @@
 import { Icon } from './icon.js'
 import { 
-  data_path, graph_style, cascade_style, emb_style 
+  data_path, graph_style, cascade_style, emb_style, patch_style 
 } from './constant.js'
 import {
   shown_group, mode, selected_groups, selected_class, filter_nodes
@@ -835,12 +835,6 @@ export class GraphView {
       ex_view.gen_example_view()
     }
 
-    // Example view size
-    if (this.len(neurons) > 1) {
-      d3.select(`#ex-${node.id}`)
-        .style('height', '240px')
-    } 
-
     // Turn off all others first
     d3.selectAll('.example-view-wrapper')
       .style('display', 'none')
@@ -856,18 +850,28 @@ export class GraphView {
       .style('display', 'block')
       .style('left', () => {
         let x = d3.event.pageX
-        let w = 240
+        let w = 550
         let mv_x = -w * (1 - 5 * curr_scale) / 2
         return (x + mv_x) + 'px'
       })
       .style('top', () => {
         let y = d3.event.pageY
-        let h = 280
-        if (neurons.length > 1) {
-          h = 240
-        }
-        let mv_y = -h * (1 - 5 * curr_scale) / 2 + 50 * curr_scale
+        let h = patch_style['one_neuron_wrap_height']
+        h = d3.min([
+          h * patch_style['max_num_wrap'],
+          h * neurons.length
+        ])
+        let mv_y = -h * (1 - 5 * curr_scale) / 2
+        mv_y += graph_style['node_h'] * curr_scale
         return (y + mv_y) + 'px'
+      })
+      .style('height', () => {
+        let h = patch_style['one_neuron_wrap_height']
+        h = d3.min([
+          h * patch_style['max_num_wrap'],
+          h * neurons.length
+        ])
+        return h + 'px'
       })
       .style('transform', `scale(${5 * curr_scale})`)
     shown_group['group'] = `${blk}-${group}`

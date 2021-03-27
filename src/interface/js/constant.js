@@ -64,6 +64,8 @@ export var patch_style = {
   'width': 80,
   'height': 80,
   'width-gap': 3,
+  'one_neuron_wrap_height': 120,
+  'max_num_wrap': 4
 }
 
 export var cascade_style = {
