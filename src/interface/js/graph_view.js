@@ -608,7 +608,6 @@ export class GraphView {
 
   parse_edge_data(data) {
     this.edge_data = data
-    console.log(this.edge_data)
   }
 
   reduce_min(arr) {
