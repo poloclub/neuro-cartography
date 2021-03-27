@@ -540,6 +540,7 @@ export class GraphView {
     // Refresh views
     d3.selectAll('.node').remove()
     d3.selectAll('.edge').remove()
+    d3.selectAll('.example-view-wrapper').remove()
     selected_groups['groups'] = new Set()
     d3.selectAll('.emb-dot')
       .style('fill', get_css_var('--gray'))
