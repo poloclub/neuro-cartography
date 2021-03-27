@@ -465,17 +465,22 @@ export class GraphViewHeader {
 
 export class GraphView {
 
-  constructor(node_data, node_range, model) {
+  constructor(node_data, edge_data, model) {
 
     // Model
     this.model = model
     this.BLKS = model.BLKS
 
-    // Data
-    this.node_data = node_data
-    this.node_range = node_range
+    // Node data
+    this.node_data = {}
+    this.node_range = {}
     this.num_nodes = {}
+    this.parse_node_data(node_data)
     this.update_num_nodes()
+
+    // Edge daa
+    this.edge_data = {}
+    this.parse_edge_data(edge_data)
 
     // Data path
     this.paths = []
@@ -489,6 +494,39 @@ export class GraphView {
   ///////////////////////////////////////////////////////
   // Parse data
   ///////////////////////////////////////////////////////
+
+  parse_node_data(data) {
+
+    let this_class = this
+    this.node_data = data
+    
+    // Minimum count (A-mat) of nodes
+    let blk_min_cnt = Object.values(data).map(        
+      (x) => {
+        let blk_nodes = Object.values(x)
+        let blk_cnts = blk_nodes.map(y => y['cnt'])
+        let blk_min = this_class.reduce_min(blk_cnts)
+        return blk_min
+      }
+    )
+
+    // Maximum count (A-mat) of nodes
+    let blk_max_cnt = Object.values(data).map(        
+      (x) => {
+        let blk_nodes = Object.values(x)
+        let blk_cnts = blk_nodes.map(y => y['cnt'])
+        let blk_max = this_class.reduce_max(blk_cnts)
+        return blk_max
+      }
+    )
+
+    // Node count range
+    this.node_range = [
+      this_class.reduce_min(blk_min_cnt),
+      this_class.reduce_max(blk_max_cnt)
+    ]
+
+  }
 
   update_num_nodes() {
 
@@ -508,6 +546,31 @@ export class GraphView {
       this_class.num_nodes[blk] = blk_i
     }
 
+  }
+
+  parse_edge_data(data) {
+    this.edge_data = data
+    console.log(this.edge_data)
+  }
+
+  reduce_min(arr) {
+    return arr.reduce((a, b) => {
+      if (a < b) {
+        return a
+      } else {
+        return b
+      }
+    })
+  }
+
+  reduce_max(arr) {
+    return arr.reduce((a, b) => {
+      if (a > b) {
+        return a
+      } else {
+        return b
+      }
+    })
   }
 
   get_node_file_path() {
@@ -1017,6 +1080,7 @@ export class GraphView {
 
     // Draw connections
     for (let blk in this.group_level_conn_data) {
+      console.log(blk)
       for (let group in this.group_level_conn_data[blk]) {
 
         // Connection data
@@ -1024,6 +1088,8 @@ export class GraphView {
         let conn_d = conn['connection']
         let prev_blk = conn['prev_blk']
 
+        console.log(conn)
+        
         // Add edge path
         d3.select('#graph_view-g')
           .selectAll('edges')

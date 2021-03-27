@@ -12,7 +12,7 @@ import { embedding_setup, selected_class, selected_groups } from './variable.js'
 
 export class EmbeddingView {
   
-  constructor(parent_id, emb_data, emb_range, node_data) {
+  constructor(parent_id, emb_data, graph_view) {
 
     // Embeddng view size
     this.emb_H = 467
@@ -21,11 +21,14 @@ export class EmbeddingView {
     // Embedding view parent
     this.parent = d3.select(`#${parent_id}`)
 
-    // Data
-    this.node_data = node_data
-    this.emb_data = emb_data
-    this.emb_range = emb_range
+    // Node Data
+    this.node_data = graph_view.node_data
     this.neuron_to_group = this.get_neuron_group_mapping()
+
+    // Embedding data
+    this.emb_data = []
+    this.emb_range = {}
+    this.parse_emb_data(emb_data)
 
     // XY Scale
     this.x_scale = {}
@@ -38,11 +41,44 @@ export class EmbeddingView {
   // Parse data
   ///////////////////////////////////////////////////////
 
+  parse_emb_data(data) {
+
+    // Initialize embedding range
+    let min_xy = {}
+    let max_xy = {}
+    for (let i of [0, 1, 2, 3, 4, 5]) {
+      min_xy[i] = {'x': 1000, 'y': 1000}
+      max_xy[i] = {'x': 0, 'y': 0}
+    }
+
+    // Parse embedding data and get embedding range
+    let neurons = Object.keys(data[0])
+    for (let neuron of neurons) {
+      let d = {}
+      d['neuron'] = neuron
+      for (let i of [0, 1, 2, 3, 4, 5]) {
+        d[i + 1] = data[i][neuron].split(',').map(x => parseFloat(x))
+        min_xy[i]['x'] = d3.min([min_xy[i]['x'], d[i + 1][0]])
+        min_xy[i]['y'] = d3.min([min_xy[i]['y'], d[i + 1][1]])
+        max_xy[i]['x'] = d3.max([max_xy[i]['x'], d[i + 1][0]])
+        max_xy[i]['y'] = d3.max([max_xy[i]['x'], d[i + 1][1]])
+      }
+      this.emb_data.push(d)
+    }
+
+    // Parse embedding range
+    for (let i of [0, 1, 2, 3, 4, 5]) {
+      this.emb_range[i] = {
+        'x': [min_xy[i]['x'], max_xy[i]['x']],
+        'y': [min_xy[i]['y'], max_xy[i]['x']],
+      }
+    }
+
+  }
+
   get_neuron_group_mapping() {
     let n2g = {}
-    let nodes_of_class = this.node_data[
-      selected_class['synset']
-    ]
+    let nodes_of_class = this.node_data
     for (let blk in nodes_of_class) {
       for (let g_num in nodes_of_class[blk]) {
         for (let neuron of nodes_of_class[blk][g_num]['group']) {
@@ -224,7 +260,6 @@ export class EmbeddingView {
       .style('display', 'none')
   }
 
-  
 }
 
 ////////////////////////////////////////////////////////////
@@ -233,10 +268,11 @@ export class EmbeddingView {
 
 export class EmbeddingHeader {
 
-  constructor(id, emb_range) {
+  constructor(id, embedding_view) {
     this.view = document.getElementById(id)
     this.id = id
-    this.emb_range = emb_range
+    this.embedding_view = embedding_view
+    this.emb_range = embedding_view.emb_range
     this.emb_H = 467
     this.emb_W = 400
     this.x_scale = null
