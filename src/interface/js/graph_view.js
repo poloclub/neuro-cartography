@@ -543,9 +543,6 @@ export class GraphView {
     this.group_level_conn_data = {}
     this.parse_edge_data(edge_data)
 
-    // Data path
-    this.paths = []
-    
     // Layout
     this.blk_x = {}
     this.blk_y = {}
@@ -644,6 +641,7 @@ export class GraphView {
   get_edge_file_path() {
     let dir_path = `${data_path['graph_dir']}/edge`
     let synset = selected_class['synset']
+    
     let edge_path = `${dir_path}/edge-${synset}.json`
     return [edge_path]
   }
@@ -691,25 +689,27 @@ export class GraphView {
     d3.select('#loading_data')
       .style('display', 'block')
 
-    // Update data paths
-    this.pahts = this.get_data_path_list()
-
-    Promise.all(this.paths.map(file => d3.json(file))).then(
+    // Update graph
+    let this_class = this
+    Promise.all(this_class.get_data_path_list().map(file => d3.json(file))).then(
       function(data) {
 
         // Refresh views
         d3.selectAll('.node').remove()
-        d3.selectAll('.edge').remove()
+        d3.selectAll('.edge-path').remove()
         d3.selectAll('.example-view-wrapper').remove()
         selected_groups['groups'] = new Set()
         d3.selectAll('.emb-dot')
           .style('fill', get_css_var('--gray'))
 
-        this.update_num_nodes()
-        this.set_group_layout_x()
-        this.draw_nodes()
-        this.update_block_wrap()
-        this.draw_connections()
+        this_class.parse_node_data(data[0])
+        this_class.parse_edge_data(data[1])
+        this_class.update_num_nodes()
+        this_class.set_layer_layout_y()
+        this_class.set_group_layout_x()
+        this_class.draw_nodes()
+        this_class.update_block_wrap()
+        this_class.draw_connections()
 
         // Turn off "Loading data" text
         d3.select('#loading_data')

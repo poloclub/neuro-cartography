@@ -8,9 +8,6 @@ import {
   InceptionV1
 } from './model.js'
 import {
-  synsets
-} from './synsets.js'
-import {
   EmbeddingHeader,
   EmbeddingView
 } from './embedding_view.js'
