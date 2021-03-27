@@ -78,6 +78,11 @@
 
 .layer-name {
   font-size: 100px;
+  stroke: white;
+  stroke-width: 10px;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  paint-order: stroke;
 }
 
 .blk-icon {

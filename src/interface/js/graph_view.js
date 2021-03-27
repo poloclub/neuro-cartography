@@ -12,6 +12,7 @@ import { SearchBar } from './search_bar.js'
 import { Slider } from './slider.js'
 
 
+
 export class GraphViewHeader {
 
   constructor(model, graph_view) {
@@ -480,6 +481,7 @@ export class GraphView {
 
     // Edge daa
     this.edge_data = {}
+    this.group_level_conn_data = {}
     this.parse_edge_data(edge_data)
 
     // Data path
@@ -598,6 +600,7 @@ export class GraphView {
     return path_list
   }
 
+
   ///////////////////////////////////////////////////////
   // Draw graph
   ///////////////////////////////////////////////////////
@@ -667,7 +670,9 @@ export class GraphView {
       .call(
         d3.zoom()
           .on('zoom', function(){
-            d3.select('#graph_view-g')
+            d3.select('#graph_view-node-g')
+              .attr('transform', d3.event.transform)
+            d3.select('#graph_view-edge-g')
               .attr('transform', d3.event.transform)
             d3.selectAll('.example-view-wrapper')
               .style('display', 'none')
@@ -684,7 +689,9 @@ export class GraphView {
       .scaleExtent([.1, 3.5])
       .extent([[0, 0], [W, H]])
       .on('zoom', function() {
-        d3.select('#graph_view-g')
+        d3.select('#graph_view-node-g')
+          .attr('transform', d3.event.transform)
+        d3.select('#graph_view-edge-g')
           .attr('transform', d3.event.transform)
       })
 
@@ -802,7 +809,7 @@ export class GraphView {
     for (let blk of this.model.BLKS) {
 
       // Add block bg-rect
-      d3.select('#graph_view-g')
+      d3.select('#graph_view-node-g')
         .append('rect')
         .attr('id', `blk-bg-${blk}`)
         .attr('x', this_class.blk_x[blk] - H / 2 + h / 2)
@@ -823,7 +830,7 @@ export class GraphView {
         .style('ry', 30)
 
       // Add block name
-      d3.select('#graph_view-g')
+      d3.select('#graph_view-node-g')
         .append('text')
         .attr('id', `blk-${blk}`)
         .attr('class', 'layer-name')
@@ -883,7 +890,7 @@ export class GraphView {
     let x = this.blk_x[blk]
     let y = this.blk_y[blk]
     let this_class = this
-    d3.select('#graph_view-g')
+    d3.select('#graph_view-node-g')
       .selectAll('nodes')
       .data(
         Object.entries(
@@ -948,7 +955,7 @@ export class GraphView {
       .attr('fill', get_css_var('--gray'))
 
     // Example view scale
-    let curr_scale = d3.select('#graph_view-g').attr('transform')
+    let curr_scale = d3.select('#graph_view-node-g').attr('transform')
     curr_scale = parseFloat(curr_scale.split('scale(')[1].slice(0, -1)) 
 
     // Show example patches of neurons
@@ -1079,55 +1086,75 @@ export class GraphView {
     this.gen_edge_width_scale()
 
     // Draw connections
-    for (let blk in this.group_level_conn_data) {
-      console.log(blk)
-      for (let group in this.group_level_conn_data[blk]) {
+    for (let blk in this.edge_data) {
+      
+      for (let group in this.edge_data[blk]) {
 
-        // Connection data
-        let conn = this.group_level_conn_data[blk][group]
-        let conn_d = conn['connection']
-        let prev_blk = conn['prev_blk']
-
-        console.log(conn)
-        
-        // Add edge path
-        d3.select('#graph_view-g')
+        // Add edges
+        d3.select('#graph_view-edge-g')
           .selectAll('edges')
-          .data(Object.entries(conn_d))
+          .data(Object.entries(this.edge_data[blk][group]))
           .enter()
             .append('path')
             .attr('id', function(d) { 
-              return gen_edge_id(d, blk, group, prev_blk)
+              return gen_edge_id(group, d[0])
             })
             .attr('class', 'edge-path')
             .attr('d', function(d) {               
-              return gen_path(d, blk, group, prev_blk) 
+              return gen_path(group, d[0]) 
             })
             .attr('stroke-width', function(d) {
               return this_class.edge_stroke_width_scale(d[1])
             })
             .attr('stroke', graph_style['edge_color'])
+            .style('display', function(d) {
+
+              // Check if prev block is shown
+              let prev_blk = d[0].split('-')[1]
+              let is_prev_off = d3
+                .select(`#${prev_blk}-${d[0]}`)
+                .style('display') == 'none'
+              if (is_prev_off) {
+                return 'none'
+              }
+
+              // Check if curr block is shown
+              let is_curr_off = d3
+                .select(`#${blk}-${group}`)
+                .style('display') == 'none'
+              if (is_curr_off) {
+                return 'none'
+              }
+              
+              return 'inline-block'
+
+            })
       }
     }
 
-    function gen_edge_id(d, blk, group, prev_blk) {
-      let prev_group = d[0]
-      return `conn-${blk}_${group}-${prev_blk}_${prev_group}`
+    function gen_edge_id(group, prev_group) {
+      return `${group}-conn-${prev_group}`
     }
 
-    function gen_path(d, blk, group, prev_blk) {
-      let prev_group = parseInt(d[0])
+    function gen_path(group, prev_group) {
+
+      let blk = group.split('-')[1]
+      let prev_blk = prev_group.split('-')[1]
+      let groun_n = group.split('-')[2]
+      let prev_group_n = prev_group.split('-')[2]
+      groun_n = parseInt(groun_n)
+      prev_group_n = parseInt(prev_group_n)
+
       let W = graph_style['node_w'] + graph_style['x_gap']
       let H = graph_style['node_h'] 
-      let x1 = this_class.blk_x[prev_blk] + prev_group * W
-      //  - 0.05 * W
+      let x1 = this_class.blk_x[prev_blk] + prev_group_n * W
       let y1 = this_class.blk_y[prev_blk] + 0.05 * H 
-      let x2 = this_class.blk_x[blk] + parseInt(group) * W
-      //  + 0.05 * W
+      let x2 = this_class.blk_x[blk] + groun_n * W
       let y2 = this_class.blk_y[blk] - 0.05 * H 
       x1 += graph_style['node_w'] / 2
       x2 += graph_style['node_w'] / 2
       y2 += graph_style['node_h'] 
+
       return this_class.gen_curve(x1, y1, x2, y2)
     }
   }
@@ -1149,48 +1176,6 @@ export class GraphView {
     path += ' ' + x2 + ' ' + y2
     return path
 
-  }
-
-  gen_group_level_conn() {
-
-    for (let blk in this.conn_data) {
-
-      this.group_level_conn_data[blk] = {}
-
-      for (let group in this.conn_data[blk]) {
-  
-        let [conn_d, prev_blk] = this.gen_group_level_conn_one_group(
-          this.conn_data[blk][group]
-        )
-
-        this.group_level_conn_data[blk][group] = {
-          'prev_blk': prev_blk,
-          'connection': conn_d
-        }
-
-      }
-
-    }
-  }
-
-  gen_group_level_conn_one_group(group_conn_data) {
-    let group_conn = {}
-    let prev_blk = ''
-    for (let neuron in group_conn_data) {
-      for (let prev_group in group_conn_data[neuron]) {
-        if (!(prev_group in group_conn)) {
-          group_conn[prev_group] = 0
-        }
-        let prev_data = group_conn_data[neuron][prev_group]
-        for (let prev_neuron_info of prev_data) {
-          group_conn[prev_group] += prev_neuron_info['cnt']
-          if (prev_blk == '') {
-            prev_blk = prev_neuron_info['prev'].split('-')[0]
-          }
-        } 
-      }
-    }
-    return [group_conn, prev_blk]
   }
 
   gen_edge_width_scale() {
