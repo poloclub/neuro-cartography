@@ -55,11 +55,15 @@ export var graph_style = {
 }
 
 export var patch_style = {
-  'num_exs': 9,
-  'num_row': 3,
-  'num_col': 3,
+  'num_exs': 7,
+  'num_row': 1,
+  'num_col': 7,
+  'num_exs_neuron': 9,
+  'num_row_neuron': 3,
+  'num_col_neuron': 3,
   'width': 80,
   'height': 80,
+  'width-gap': 3,
 }
 
 export var cascade_style = {

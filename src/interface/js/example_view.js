@@ -37,11 +37,11 @@ export class ExampleView {
       let neuron_wrapper = inner_wrapper
         .append('svg')
         .attr('id', `neuron-${neuron}`)
-        .attr('class', `neuron-wrapper`)
+        .attr('class', 'neuron-wrapper-graph')
         .style('transform', function () {
-          let num_col = patch_style['num_col'] 
-          let y = neuron_i * patch_style['height'] * num_col
-          y += neuron_i * 35
+          let num_row = patch_style['num_row'] 
+          let y = neuron_i * patch_style['height'] * num_row
+          y += neuron_i * 40
           return `translate(0px, ${y}px)`
         })
         .on('mouseover', function() {
@@ -90,7 +90,8 @@ export class ExampleView {
           .attr('xlink:href', d => d)
           .attr('x', function (d, i) {
             let W = patch_style['width']
-            return (i % patch_style['num_col']) * W
+            let gap = patch_style['width-gap'] * i
+            return (i % patch_style['num_col']) * W + gap
           })
           .attr('y', function (d, i) {
             let H = patch_style['height']
@@ -168,11 +169,11 @@ export class ExampleViewNeuron {
         .attr('xlink:href', d => d)
         .attr('x', function (d, i) {
           let W = patch_style['width']
-          return (i % patch_style['num_col']) * W
+          return (i % patch_style['num_col_neuron']) * W 
         })
         .attr('y', function (d, i) {
           let H = patch_style['height']
-          let row = parseInt(i / patch_style['num_col'])
+          let row = parseInt(i / patch_style['num_col_neuron'])
           return H * row + 30
         })
         .attr('width', patch_style['width'])
@@ -194,7 +195,7 @@ export class ExampleViewNeuron {
 
   get_image_paths(neuron) {
 
-    let idxs = Array.from(Array(patch_style['num_exs']).keys())
+    let idxs = Array.from(Array(patch_style['num_exs_neuron']).keys())
     let paths = idxs.map(x => 
       `${data_path['image_dir']}/${neuron}-dataset-p-${x}.jpg`
     )

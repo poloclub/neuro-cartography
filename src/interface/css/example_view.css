@@ -2,8 +2,8 @@
   overflow-y: scroll;
   position: absolute;
   border-radius: 5px;
-  width: 240px;
-  min-height: 280px;
+  width: 577px;
+  min-height: 120px;
   font-size: 15px;
   background-color: white;
   border: #bbbbbb solid 0.5px;
@@ -26,8 +26,14 @@
 
 .neuron-wrapper {
   position: absolute;
-  width: 240px;
+  width: 577px;
   height: 280px;
+}
+
+.neuron-wrapper-graph {
+  position: absolute;
+  width: 577px;
+  height: 120px;
 }
 
 .example-view-neuron-wrapper {

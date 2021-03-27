@@ -1,20 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Courgette&family=Fredoka+One&family=Fugaz+One&family=Indie+Flower&family=Kalam:wght@300;400;700&family=Lobster&family=Pacifico&family=Poiret+One&family=Righteous&family=Shadows+Into+Light&family=Sigmar+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Fredoka+One&display=swap');
 
-/* FONTS
-font-family: 'Abril Fatface', cursive;
-font-family: 'Barlow', sans-serif;
-font-family: 'Courgette', cursive;
-font-family: 'Fredoka One', cursive;
-font-family: 'Fugaz One', cursive;
-font-family: 'Indie Flower', cursive;
-font-family: 'Kalam', cursive;
-font-family: 'Lobster', cursive;
-font-family: 'Pacifico', cursive;
-font-family: 'Poiret One', cursive;
-font-family: 'Righteous', cursive;
-font-family: 'Shadows Into Light', cursive;
-font-family: 'Sigmar One', cursive; 
-*/
 
 body {
   font-family: 'Barlow', sans-serif;

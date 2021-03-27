@@ -838,7 +838,7 @@ export class GraphView {
     // Example view size
     if (this.len(neurons) > 1) {
       d3.select(`#ex-${node.id}`)
-        .style('height', '400px')
+        .style('height', '240px')
     } 
 
     // Turn off all others first
@@ -852,8 +852,6 @@ export class GraphView {
     curr_scale = parseFloat(curr_scale.split('scale(')[1].slice(0, -1)) 
 
     // Show example patches of neurons
-
-    // TODO: correct lseft and top
     d3.select(`#ex-${blk}-${group}`)
       .style('display', 'block')
       .style('left', () => {
@@ -866,15 +864,13 @@ export class GraphView {
         let y = d3.event.pageY
         let h = 280
         if (neurons.length > 1) {
-          h = 400
+          h = 240
         }
         let mv_y = -h * (1 - 5 * curr_scale) / 2 + 50 * curr_scale
         return (y + mv_y) + 'px'
       })
       .style('transform', `scale(${5 * curr_scale})`)
     shown_group['group'] = `${blk}-${group}`
-
-    
 
     // Turn off other embeddings first
     d3.selectAll('.emb-dot')
