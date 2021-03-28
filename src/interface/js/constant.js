@@ -89,7 +89,7 @@ export var cascade_style = {
 
 export var emb_style = {
   'normal-r': 3,
-  'highlight-r': 5,
-  'hover-r': 8,
+  'highlight-r': 10,
+  'hover-r': 20,
   'normal-opacity': 0.5
 }

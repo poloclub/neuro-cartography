@@ -510,7 +510,7 @@ export class NNView {
     let title = document.createElement('div')
     title.id = 'NNView-nei-neuron-title'
     title.className = 'NNView-title'
-    title.innerText = 'Nearest Neurons'
+    title.innerText = 'Most Related Neurons'
     this.nei_view.appendChild(title)
 
     // Find neighbors

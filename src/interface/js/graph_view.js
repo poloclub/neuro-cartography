@@ -303,7 +303,7 @@ export class GraphViewHeader {
       'graph_view-header-filter'
     )
     let title = document.createElement('div')
-    title.innerText = 'Filter Nodes'
+    title.innerText = 'Filter Graph'
     title.id = 'graph_view-header-filter-text'
     title.className = 'graph_view-header-title'
     filter_div.appendChild(title)
@@ -367,7 +367,7 @@ export class GraphViewHeader {
 
   update_num_nodes() {
 
-    let thr = filter_nodes['cnt_thr'] * 100
+    let thr = filter_nodes['cnt_thr'] * filter_nodes['cnt_unit']
     
     for (let blk of this.BLKS) {
       let blk_groups = this.graph_view.node_data[blk]
@@ -589,7 +589,7 @@ export class GraphView {
 
   update_num_nodes() {
 
-    let thr = filter_nodes['cnt_thr'] * 100
+    let thr = filter_nodes['cnt_thr'] * filter_nodes['cnt_unit']
     let this_class = this
 
     for (let blk of this.BLKS) {
@@ -1034,7 +1034,7 @@ export class GraphView {
         let x = d3.event.pageX
         let w = 550
         let mv_x = -w * (1 - 3 * curr_scale) / 2
-        mv_x += (3 * curr_scale) * graph_style['node_w']
+        mv_x += (3 * curr_scale) * graph_style['node_w'] * 4.5
         return (x + mv_x) + 'px'
       })
       .style('top', () => {
@@ -1065,11 +1065,24 @@ export class GraphView {
       .attr('fill', get_css_var('--gray'))
       .attr('r', emb_style['normal-r'])
 
-    // Highlight embedding
+    // Highlight embedding of clicked groups
+    for (let g of selected_groups['groups']) {
+      d3.selectAll(`.emb-dot-group-${g}`)
+        .attr('fill', get_css_var('--hotpink'))
+        .attr('r', emb_style['highlight-r'])
+    }
+
+    // Highlight embedding of hovered group
     for (let neuron of neurons) {
       d3.select('#dot-' + neuron)
         .attr('fill', get_css_var('--hotpink'))
         .attr('r', emb_style['hover-r'])
+    }
+
+    // Highlight node of selected group
+    for (let g of selected_groups['groups']) {
+      d3.select(`#${g}`)
+        .attr('fill', get_css_var('--hotpink'))
     }
 
     // Highlight node
@@ -1103,13 +1116,32 @@ export class GraphView {
         d3.selectAll('.emb-dot')
           .attr('fill', get_css_var('--gray'))
           .attr('r', emb_style['normal-r'])
-      
+
+        // Highlight embedding of clicked groups
+        for (let g of selected_groups['groups']) {
+          d3.selectAll(`.emb-dot-group-${g}`)
+            .attr('fill', get_css_var('--hotpink'))
+            .attr('r', emb_style['highlight-r'])
+        }
+
+        // Highlight node of selected group
+        for (let g of selected_groups['groups']) {
+          d3.select(`#${g}`)
+            .attr('fill', get_css_var('--hotpink'))
+        }
+        
       } 
     }, 800)
 
     // Dehighlight edge
     d3.selectAll(`.edge-${group}`)
       .classed('flowline', false)
+
+    // Highlight node of selected group
+    for (let g of selected_groups['groups']) {
+      d3.select(`#${g}`)
+        .attr('fill', get_css_var('--hotpink'))
+    }
 
   }
 
@@ -1122,11 +1154,12 @@ export class GraphView {
 
       // Dehighlight node
       d3.select(`#${node.id}`)
-        .style('fill', get_css_var('--gray'))
+        .attr('fill', get_css_var('--gray'))
 
-      // Turn off embedding
+      // Dehighlight off embedding
       d3.selectAll(`.emb-dot-group-${node.id}`)
-        .style('display', 'none')
+        .attr('fill', get_css_var('--gray'))
+        .attr('r', emb_style['normal-r'])
 
     } else {
 
@@ -1135,22 +1168,15 @@ export class GraphView {
 
       // Highlight node
       d3.select(`#${node.id}`)
-        .style('fill', get_css_var('--hotpink'))
+        .attr('fill', get_css_var('--hotpink'))
 
-      // Show embedding
-      d3.selectAll('.emb-dot-group-' + node.id)
-        .style('display', 'block')
-        .style('fill', get_css_var('--hotpink'))
+      // Highlight embedding
+      d3.selectAll(`.emb-dot-group-${node.id}`)
+        .attr('fill', get_css_var('--hotpink'))
+        .attr('r', emb_style['highlight-r'])
 
     }
 
-    
-
-    // console.log('click', this)
-    // TODO: Remove this
-    // 
-    // d3.select(`#ex-${blk}-${group}`)
-    //   .style('display', 'block')
   }
 
   ///////////////////////////////////////////////////////

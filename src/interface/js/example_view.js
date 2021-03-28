@@ -4,7 +4,8 @@ import {
   patch_style,
 } from './constant.js'
 import {
-  shown_group
+  shown_group,
+  selected_groups
 } from './variable.js'
 import {
   get_css_var
@@ -61,6 +62,7 @@ export class ExampleView {
               .attr('fill', get_css_var('--hotpink'))
               .attr('r', emb_style['highlight-r'])
           }
+
         })
         .on('mouseout', function() {
           d3.selectAll('.example-view-wrapper')
@@ -70,6 +72,19 @@ export class ExampleView {
           d3.selectAll('.emb-dot')
             .attr('fill', get_css_var('--gray'))
             .attr('r', emb_style['normal-r'])
+
+          // Highlight node of selected group
+          for (let g of selected_groups['groups']) {
+            d3.select(`#${g}`)
+              .attr('fill', get_css_var('--hotpink'))
+          }
+
+          // Highlight embedding of clicked groups
+          for (let g of selected_groups['groups']) {
+            d3.selectAll(`.emb-dot-group-${g}`)
+              .attr('fill', get_css_var('--hotpink'))
+              .attr('r', emb_style['highlight-r'])
+          }
         })
 
       // Add neuron id
@@ -221,12 +236,6 @@ export class ExampleViewCard {
       .append('svg')
       .attr('id', `card-neuron-${this.neuron}-svg`)
       .attr('class', 'card-svg')
-
-    // line
-    // inner_wrapper
-    //   .append('line')
-    //   .attr('id', `card-neuron-${this.neuron}-bg`)
-    //   .attr('class', 'card-bg')
 
     // Neuron id
     inner_wrapper
