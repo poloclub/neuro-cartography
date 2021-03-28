@@ -1033,7 +1033,8 @@ export class GraphView {
       .style('left', () => {
         let x = d3.event.pageX
         let w = 550
-        let mv_x = -w * (1 - 5 * curr_scale) / 2
+        let mv_x = -w * (1 - 3 * curr_scale) / 2
+        mv_x += (3 * curr_scale) * graph_style['node_w']
         return (x + mv_x) + 'px'
       })
       .style('top', () => {
@@ -1043,8 +1044,9 @@ export class GraphView {
           h * patch_style['max_num_wrap'],
           h * neurons.length
         ])
-        let mv_y = -h * (1 - 5 * curr_scale) / 2
-        mv_y += graph_style['node_h'] * curr_scale
+        let mv_y = -h * (1 - 3 * curr_scale) / 2
+        mv_y -= graph_style['node_h'] * curr_scale
+
         return (y + mv_y) + 'px'
       })
       .style('height', () => {
@@ -1055,7 +1057,7 @@ export class GraphView {
         ])
         return h + 'px'
       })
-      .style('transform', `scale(${5 * curr_scale})`)
+      .style('transform', `scale(${3 * curr_scale})`)
     shown_group['group'] = `${blk}-${group}`
 
     // Turn off other embeddings first
@@ -1074,6 +1076,9 @@ export class GraphView {
     d3.select(`#${blk}-${group}`)
       .attr('fill', get_css_var('--hotpink'))
 
+    // Highlight edge
+    d3.selectAll(`.edge-${group}`)
+      .classed('flowline', true)
   }
 
   mouseleave_node(node) {
@@ -1098,9 +1103,13 @@ export class GraphView {
         d3.selectAll('.emb-dot')
           .attr('fill', get_css_var('--gray'))
           .attr('r', emb_style['normal-r'])
-
+      
       } 
     }, 800)
+
+    // Dehighlight edge
+    d3.selectAll(`.edge-${group}`)
+      .classed('flowline', false)
 
   }
 
@@ -1168,7 +1177,12 @@ export class GraphView {
             .attr('id', function(d) { 
               return gen_edge_id(group, d[0])
             })
-            .attr('class', 'edge-path')
+            .attr('class', (d) => {
+              let class1 = 'edge-path'
+              let class2 = `edge-${d[0]}`
+              let class3 = `edge-${group}`
+              return [class1, class2, class3].join(' ')
+            })
             .attr('d', function(d) {               
               return gen_path(group, d[0]) 
             })

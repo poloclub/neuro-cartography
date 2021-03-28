@@ -1,10 +1,15 @@
 import { Icon } from './icon.js'
 import { get_css_var } from './utils.js'
-import { ExampleViewNeuron } from './example_view.js'
+import { ExampleViewCard, ExampleViewNeuron } from './example_view.js'
 import { Dropdown } from './dropdown.js'
 import { Slider } from './slider.js'
 import { emb_style } from './constant.js'
-import { embedding_setup, selected_class, selected_groups } from './variable.js'
+import { 
+  embedding_setup, 
+  selected_class, 
+  selected_groups,
+  selected_neuron
+} from './variable.js'
 
 ////////////////////////////////////////////////////////////
 // Embedding
@@ -12,7 +17,7 @@ import { embedding_setup, selected_class, selected_groups } from './variable.js'
 
 export class EmbeddingView {
   
-  constructor(parent_id, emb_data, graph_view) {
+  constructor(parent_id, emb_data, graph_view, nei_view) {
 
     // Embeddng view size
     this.emb_H = 467
@@ -20,6 +25,7 @@ export class EmbeddingView {
 
     // Embedding view parent
     this.parent = d3.select(`#${parent_id}`)
+    this.nei_view = nei_view
 
     // Node Data
     this.node_data = graph_view.node_data
@@ -203,6 +209,9 @@ export class EmbeddingView {
         .on('mouseout', d => { 
           return this_class.dot_mouseout(d['neuron']) 
         })
+        .on('click', d => {
+          return this_class.dot_click(d['neuron'])
+        })
         .attr('fill', get_css_var('--gray'))
 
   }
@@ -260,10 +269,27 @@ export class EmbeddingView {
       .style('display', 'none')
   }
 
+  dot_click(neuron) {
+
+    console.log(neuron)
+
+    if (selected_neuron['selected'] != neuron) {
+
+      // Update selected neuron
+      selected_neuron['selected'] = neuron
+
+      // Update neighbor view
+      this.nei_view.update_nn_view()
+
+    }
+    
+    
+  }
+
 }
 
 ////////////////////////////////////////////////////////////
-// Embedding header
+// Embedding headers
 ////////////////////////////////////////////////////////////
 
 export class EmbeddingHeader {
@@ -419,6 +445,79 @@ export class EmbeddingHeader {
 
     // Neurons of selected class
     // TODO:
+
+  }
+
+}
+
+////////////////////////////////////////////////////////////
+// Nearest Neighbor view
+////////////////////////////////////////////////////////////
+
+export class NNView {
+
+  constructor(parent_id, embedding_view) {
+    this.parent_id = parent_id
+    this.embedding_view = embedding_view
+    this.selected_view = null
+    this.nei_view = null
+  }
+
+  gen_neighbor_view() {
+    this.gen_layout()
+    this.gen_selected()
+  }
+
+  gen_layout() {
+
+    let parent = document.getElementById(this.parent_id)
+
+    let selected_neuron_view = document.createElement('div')
+    selected_neuron_view.id = 'NNView-selected-neuron'
+    parent.appendChild(selected_neuron_view)
+    this.selected_view = selected_neuron_view
+
+    let neighbor_view = document.createElement('div')
+    neighbor_view.id = 'NNView-neighbors'
+    parent.appendChild(neighbor_view)
+    this.nei_view = neighbor_view
+
+  }
+
+  gen_selected() {
+
+    let title = document.createElement('div')
+    title.id = 'NNView-selected-neuron-title'
+    title.className = 'NNView-title'
+    title.innerText = 'Selected Neuron'
+    this.selected_view.appendChild(title)
+
+    this.gen_card(
+      'NNView-selected-neuron-card',
+      selected_neuron['selected'], 
+      this.selected_view
+    )
+
+  }
+
+  gen_card(id, neuron, parent) {
+    
+    let card = new ExampleViewCard(
+      parent.id, id, neuron, 'NNView-neuron-card'
+    )
+    card.gen_example_view()
+
+  }
+
+  update_nn_view() {
+
+    // Refresh the view
+    d3.select('#NNView-selected-neuron').remove()
+    d3.select('#NNView-neighbors').remove()
+    this.gen_layout()
+
+    // Add selected neuron
+    this.gen_selected()
 
   }
 

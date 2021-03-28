@@ -96,12 +96,26 @@
 
 .node {
   cursor: pointer;
-  rx: 100;
-  ry: 100;
 }
 
 .edge-path {
   fill: none;
   stroke-linecap: round;
+  opacity: 0.5;
 }
 
+.flowline {
+  cursor: crosshair;
+  stroke-dasharray: 80 80;
+  animation: flow 2.5s linear;
+  stroke: var(--hotpink);
+}
+
+@keyframes flow {
+  from {
+    stroke-dashoffset: 900;
+  }
+  to {
+    stroke-dashoffset: 10;
+  }
+}

@@ -25,8 +25,8 @@ export var graph_style = {
   'graph_view_H': 800,
   'node_w': 80,
   'node_h': 80,
-  'x_gap': 40,
-  'y_gap': 400,
+  'x_gap': 60,
+  'y_gap': 500,
   'blk_gap': 600,
   'blk_bg': {
     'height': 200,
@@ -74,7 +74,13 @@ export var patch_style = {
   'height': 80,
   'width-gap': 3,
   'one_neuron_wrap_height': 120,
-  'max_num_wrap': 4
+  'max_num_wrap': 4,
+  'card-width': 40,
+  'card-height': 40,
+  'num_exs_card': 9,
+  'num_row_card': 1,
+  'num_col_card': 9,
+  'card_img_gap': 1
 }
 
 export var cascade_style = {

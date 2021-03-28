@@ -19,6 +19,10 @@ export var selected_groups = {
   'groups': new Set()
 }
 
+export var selected_neuron = {
+  'selected': ''
+}
+
 export var filter_nodes = {
   'max_num_nodes': 5,
   'max_num_neurons': 10,

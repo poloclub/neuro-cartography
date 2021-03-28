@@ -53,3 +53,24 @@
 #epoch {
   transform: translate(3px, 6px);
 }
+
+.neighbor_view {
+  overflow: scroll;
+}
+
+.NNView-title {
+  padding-left: 17px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  font-weight: bold;
+}
+
+.NNView-neuron-id {
+  padding-left: 17px;
+  color: var(--gray_text);
+}
+
+.NNView-neuron-card-wrapper {
+  border-bottom: solid var(--bright_gray_border) 1px;
+  height: 80px;
+}

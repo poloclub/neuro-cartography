@@ -55,3 +55,15 @@
 .emb-dot {
   opacity: 0.25;
 }
+
+.card-svg {
+  width: 400px;
+}
+
+.card-id {
+  transform: translate(17px, 20px);
+}
+
+.card-neuron-g {
+  transform: translate(17px, 0px);
+}

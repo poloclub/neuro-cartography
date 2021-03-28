@@ -9,7 +9,8 @@ import {
 } from './model.js'
 import {
   EmbeddingHeader,
-  EmbeddingView
+  EmbeddingView,
+  NNView
 } from './embedding_view.js'
 import { 
   GraphView,
@@ -35,6 +36,7 @@ class Main {
     // Views
     this.embedding_view = null
     this.graph_view = null
+    this.nn_view = null
 
   }
 
@@ -98,10 +100,11 @@ class Main {
         )
 
         // Generate embedding view
+        this_class.generate_neighbor_view()
         this_class.generate_embedding_view(
           data.slice(0, 6)
         )
-        this_class.gen_embedding_header()
+        this_class.generate_embedding_header()
 
         // Generate graph view header
         this_class.generate_graph_view_header()
@@ -114,7 +117,7 @@ class Main {
     )
   }
 
-  gen_embedding_header() {
+  generate_embedding_header() {
     let emb_header = new EmbeddingHeader(
       'embedding_header',
       this.embedding_view
@@ -127,9 +130,18 @@ class Main {
     this.embedding_view = new EmbeddingView(
       'embedding_view', 
       data,
-      this.graph_view
+      this.graph_view,
+      this.nn_view
     )
     this.embedding_view.draw_dots()
+  }
+
+  generate_neighbor_view() {
+    this.nn_view = new NNView(
+      'neighbor_view',
+      this.embedding_views
+    )
+    this.nn_view.gen_neighbor_view()
   }
 
   generate_graph_view(node_data, edge_data) {

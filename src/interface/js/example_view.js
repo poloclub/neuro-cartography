@@ -203,3 +203,88 @@ export class ExampleViewNeuron {
   }
 
 }
+
+export class ExampleViewCard {
+
+  constructor(parent_id, id, neuron, class_name) {
+    this.parent = document.getElementById(parent_id)
+    this.id = id
+    this.neuron = neuron
+    this.class_name = class_name
+  }
+
+  gen_example_view() {
+
+    // Wrapper
+    let wrapper = this.gen_wrapper()
+    let inner_wrapper = d3.select(wrapper)
+      .append('svg')
+      .attr('id', `card-neuron-${this.neuron}-svg`)
+      .attr('class', 'card-svg')
+
+    // line
+    // inner_wrapper
+    //   .append('line')
+    //   .attr('id', `card-neuron-${this.neuron}-bg`)
+    //   .attr('class', 'card-bg')
+
+    // Neuron id
+    inner_wrapper
+      .append('text')
+      .attr('id', `card-neuron-id-${this.neuron}`)
+      .attr('class', 'card-id')
+      .text(this.neuron)
+
+    // Image wrapper
+    let img_wrapper = inner_wrapper
+      .append('g')
+      .attr('id', `card-neuron-${this.neuron}-g`)
+      .attr('class', 'card-neuron-g')
+
+    // Add images
+    let img_paths = this.get_image_paths(this.neuron)
+    let examples = img_wrapper
+      .selectAll('imgs')
+      .data(img_paths)
+      .enter()
+      .append('image')
+      .attr('xlink:href', d => d)
+        .attr('x', function (d, i) {
+          let W = patch_style['card-width']
+          let gap = patch_style['card_img_gap']
+          return (i % patch_style['num_col_card']) * (W + gap)
+        })
+        .attr('y', function (d, i) {
+          let H = patch_style['card-height']
+          let row = parseInt(i / patch_style['num_col_card'])
+          return H * row + 30
+        })
+        .attr('width', patch_style['card-width'])
+        .attr('height', patch_style['card-height'])
+        .attr('preserveAspectRatio', 'none')
+
+
+  }
+
+  gen_wrapper() {
+    let wrapper = document.createElement('div')
+    wrapper.id = this.id
+    wrapper.className = `${this.class_name}-wrapper`
+    this.parent.appendChild(wrapper)
+    return wrapper
+  }
+
+  get_card() {
+    return document.getElementById(`card-neuron-${this.neuron}`)
+  }
+
+  get_image_paths(neuron) {
+
+    let idxs = Array.from(Array(patch_style['num_exs_card']).keys())
+    let paths = idxs.map(x => 
+      `${data_path['image_dir']}/${neuron}-dataset-p-${x}.jpg`
+    )
+    return paths
+  }
+
+}
