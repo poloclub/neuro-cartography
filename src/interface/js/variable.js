@@ -20,7 +20,7 @@ export var selected_groups = {
 }
 
 export var selected_neuron = {
-  'selected': ''
+  'selected': null
 }
 
 export var filter_nodes = {

@@ -74,3 +74,8 @@
   border-bottom: solid var(--bright_gray_border) 1px;
   height: 80px;
 }
+
+#NNView-nei-list {
+  height: calc(100vh - 700px);
+  overflow: scroll;
+}

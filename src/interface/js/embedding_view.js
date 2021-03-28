@@ -271,8 +271,6 @@ export class EmbeddingView {
 
   dot_click(neuron) {
 
-    console.log(neuron)
-
     if (selected_neuron['selected'] != neuron) {
 
       // Update selected neuron
@@ -456,16 +454,18 @@ export class EmbeddingHeader {
 
 export class NNView {
 
-  constructor(parent_id, embedding_view) {
+  constructor(parent_id, emb_data) {
     this.parent_id = parent_id
-    this.embedding_view = embedding_view
+    this.emb_data = []
     this.selected_view = null
     this.nei_view = null
+    this.parse_emb_data(emb_data)
   }
 
   gen_neighbor_view() {
     this.gen_layout()
     this.gen_selected()
+    this.gen_neighbors()
   }
 
   gen_layout() {
@@ -492,11 +492,63 @@ export class NNView {
     title.innerText = 'Selected Neuron'
     this.selected_view.appendChild(title)
 
-    this.gen_card(
-      'NNView-selected-neuron-card',
-      selected_neuron['selected'], 
-      this.selected_view
-    )
+    if (selected_neuron['selected'] != null) {
+
+      this.gen_card(
+        'NNView-selected-neuron-card',
+        selected_neuron['selected'], 
+        this.selected_view
+      )
+
+    }
+
+  }
+
+  gen_neighbors() {
+
+    // Title
+    let title = document.createElement('div')
+    title.id = 'NNView-nei-neuron-title'
+    title.className = 'NNView-title'
+    title.innerText = 'Nearest Neurons'
+    this.nei_view.appendChild(title)
+
+    // Find neighbors
+    let neighbors = []
+    if (selected_neuron['selected'] != null) {
+      let epoch = embedding_setup['epoch']
+      let [x, y] = this.emb_data[epoch][selected_neuron['selected']]
+      neighbors = Object.entries(this.emb_data[epoch])
+        .sort((a, b) => {
+          let [x_a, y_a] = a[1]
+          let [x_b, y_b] = b[1]
+          let d_a_sq = (x - x_a) ** 2 + (y - y_a) ** 2
+          let d_b_sq = (x - x_b) ** 2 + (y - y_b) ** 2
+          return d_a_sq - d_b_sq
+        })
+        .map(x => x[0])
+        .filter(x => {
+          if (x == selected_neuron['selected']) {
+            return false
+          } else {
+            return true
+          }
+        })
+        .slice(0, 10)
+    }
+
+    // Show neighbors
+    let nei_list_view = document.createElement('div')
+    nei_list_view.id = 'NNView-nei-list'
+    this.nei_view.appendChild(nei_list_view)
+    for (let nei of neighbors) {
+      this.gen_card(
+        `NNView-neighbors-${nei}`,
+        nei, 
+        nei_list_view
+      )  
+    }
+    
 
   }
 
@@ -514,10 +566,32 @@ export class NNView {
     // Refresh the view
     d3.select('#NNView-selected-neuron').remove()
     d3.select('#NNView-neighbors').remove()
+    d3.select('#NNView-nei-neuron-title').remove()
     this.gen_layout()
 
     // Add selected neuron
     this.gen_selected()
+
+    // Add neighbor neurons
+    this.gen_neighbors()
+
+  }
+
+  parse_emb_data(data) {
+
+    for (let i of [0, 1, 2, 3, 4, 5]) {
+
+      let neurons = Object.keys(data[i])
+      let emb_d = {}
+      for (let neuron of neurons) {
+        let x = parseFloat(data[i][neuron].split(',')[0])
+        let y = parseFloat(data[i][neuron].split(',')[1])
+        emb_d[neuron] = [x, y]
+      }
+
+      this.emb_data.push(emb_d)
+
+    }
 
   }
 

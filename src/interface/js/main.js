@@ -100,7 +100,9 @@ class Main {
         )
 
         // Generate embedding view
-        this_class.generate_neighbor_view()
+        this_class.generate_neighbor_view(
+          data.slice(0, 6)
+        )
         this_class.generate_embedding_view(
           data.slice(0, 6)
         )
@@ -136,10 +138,10 @@ class Main {
     this.embedding_view.draw_dots()
   }
 
-  generate_neighbor_view() {
+  generate_neighbor_view(data) {
     this.nn_view = new NNView(
       'neighbor_view',
-      this.embedding_views
+      data
     )
     this.nn_view.gen_neighbor_view()
   }
