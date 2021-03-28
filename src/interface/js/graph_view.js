@@ -465,7 +465,7 @@ export class GraphViewHeader {
   update_connection() {
 
     let this_class = this
-    this.gen_edge_width_scale()
+    this.graph_view.gen_edge_width_scale()
 
     d3.selectAll('.edge-path')
       .transition()
@@ -699,8 +699,9 @@ export class GraphView {
         d3.selectAll('.edge-path').remove()
         d3.selectAll('.example-view-wrapper').remove()
         selected_groups['groups'] = new Set()
+        selected_groups['neurons'] = new Set()
         d3.selectAll('.emb-dot')
-          .style('fill', get_css_var('--gray'))
+          .attr('fill', get_css_var('--gray'))
 
         this_class.parse_node_data(data[0])
         this_class.parse_edge_data(data[1])
@@ -1154,6 +1155,13 @@ export class GraphView {
       // Remove group from the selected groups
       selected_groups['groups'].delete(node.id)
 
+      // Remove neurons of the node from the selected groups
+      let blk = node.id.split('-g-')[0]
+      let g = 'g-' + node.id.split('-g-')[1]
+      for (let neuron of this.node_data[blk][g]['group']) {
+        selected_groups['neurons'].delete(neuron)
+      }
+
       // Dehighlight node
       d3.select(`#${node.id}`)
         .attr('fill', get_css_var('--gray'))
@@ -1167,6 +1175,13 @@ export class GraphView {
 
       // Add group to the selected groups
       selected_groups['groups'].add(node.id)
+
+      // Add neurons of the node from the selected groups
+      let blk = node.id.split('-g-')[0]
+      let g = 'g-' + node.id.split('-g-')[1]
+      for (let neuron of this.node_data[blk][g]['group']) {
+        selected_groups['neurons'].add(neuron)
+      }
 
       // Highlight node
       d3.select(`#${node.id}`)

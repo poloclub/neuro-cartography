@@ -16,6 +16,7 @@
 
 .emb-dot {
   cursor: pointer;
+  opacity: 0.1;
 }
 
 #embedding_header {
@@ -75,7 +76,35 @@
   height: 80px;
 }
 
+#NNView-selected-neuron-title {
+  display: inline-block;
+}
+
 #NNView-nei-list {
   height: calc(100vh - 700px);
   overflow: scroll;
+}
+
+#selected-neuron-symbol-svg {
+  transform: translate(2px, 4px);
+  width: 30px;
+  height: 30px;
+}
+
+#selected-neuron-symbol-g {
+  transform: translate(13px, 20px);
+}
+
+#NNView-nei-neuron-title {
+  display: inline-block;
+}
+
+#nei-symbol-svg {
+  transform: translate(2px, 4px);
+  width: 30px;
+  height: 30px;
+}
+
+#nei-symbol-g {
+  transform: translate(13px, 20px);
 }

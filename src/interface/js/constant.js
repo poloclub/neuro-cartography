@@ -91,5 +91,6 @@ export var emb_style = {
   'normal-r': 3,
   'highlight-r': 10,
   'hover-r': 20,
-  'normal-opacity': 0.5
+  'normal-opacity': 0.1,
+  'highlight-opacity': 0.3
 }

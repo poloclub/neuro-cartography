@@ -216,23 +216,16 @@ export class EmbeddingView {
 
   }
 
-  dot_mouseover(neuron) {
-
-    // Highlight dot
-    d3.select(`#dot-${neuron}`)
-      .attr('fill', get_css_var('--hotpink'))
-      .attr('r', emb_style['highlight-r'])
-
-    // Highlight group
-    let group = this.neuron_to_group[neuron]
-    d3.select(`#${group}`)
-      .attr('fill', get_css_var('--hotpink'))
-
-    // Highlight dots of the group
-    if (neuron in this.neuron_to_group) {
-      d3.selectAll('.emb-dot-group-' + group)
-        .attr('fill', get_css_var('--hotpink'))
+  is_in_selected_group(neuron) {
+    let g = this.neuron_to_group[neuron]
+    if (selected_groups['groups'].has(g)) {
+      return true
+    } else {
+      return false
     }
+  }
+
+  dot_mouseover(neuron) {
 
     // Generate example view
     let view_id = `ex-neuron-${neuron}`
@@ -248,6 +241,29 @@ export class EmbeddingView {
       .style('display', 'block')
       .style('left', (d3.event.pageX + 50) + 'px')		
       .style('top', (d3.event.pageY - 30) + 'px')
+
+    // Highlight group
+    let group = this.neuron_to_group[neuron]
+    d3.select(`#${group}`)
+      .attr('fill', get_css_var('--hotpink'))
+
+    // Highlight dots of neighbors in the same group
+    if (neuron in this.neuron_to_group) {
+      d3.selectAll('.emb-dot-group-' + group)
+        .attr('fill', get_css_var('--hotpink'))
+    }
+
+    // Highlight the hovered dot
+    let this_class = this
+    d3.select(`#dot-${neuron}`)
+      .attr('fill', () => {
+        if (this_class.is_in_selected_group(neuron)) {
+          return get_css_var('--blueviolet')
+        } else {
+          return get_css_var('--dodgerblue')
+        }
+      })
+      .attr('r', emb_style['highlight-r'])
 
   }
 
@@ -273,8 +289,16 @@ export class EmbeddingView {
       d3.selectAll(`.emb-dot-group-${g}`)
         .attr('fill', get_css_var('--hotpink'))
         .attr('r', emb_style['highlight-r'])
+        .style('opacity', emb_style['highlight-opacity'])
         .raise()
     }
+
+    // Highlight clicked dot
+    this.highlight_clicked_dot()
+
+    // Highlight most related dots
+    this.highlight_nei_dots()
+
   }
 
   dot_click(neuron) {
@@ -287,9 +311,78 @@ export class EmbeddingView {
       // Update neighbor view
       this.nei_view.update_nn_view()
 
+      // Highlight clicked dot
+      this.highlight_clicked_dot()
+
+      // Highlight neighbors
+      this.highlight_nei_dots()
+
     }
     
     
+  }
+
+  highlight_clicked_dot() {
+    let this_class = this
+    d3.select(`#dot-${selected_neuron['selected']}`)
+      .attr('fill', () => {
+        let neuron = selected_neuron['selected']
+        if (this_class.is_in_selected_group(neuron)) {
+          return get_css_var('--blueviolet')
+        } else {
+          return get_css_var('--dodgerblue')
+        }
+      })
+      .style('stroke', get_css_var('--darkblue'))
+      .style('stroke-width', '2px')
+      .attr('r', emb_style['highlight-r'])
+      .style('opacity', emb_style['highlight-opacity'])
+  }
+
+  highlight_nei_dots() {
+    let neighbors = this.find_neigbors()
+    let this_class = this
+    for (let nei of neighbors) {
+      d3.select(`#dot-${nei}`)
+        .attr('fill', () => {
+          let neuron = selected_neuron['selected']
+          if (this_class.is_in_selected_group(neuron)) {
+            return get_css_var('--dodgerblue')
+          } else {
+            return get_css_var('--dodgerblue')
+          }
+        })
+        .attr('r', emb_style['highlight-r'])
+    }
+  }
+
+  find_neigbors() {
+    let neighbors = []
+    if (selected_neuron['selected'] != null) {
+      let epoch = embedding_setup['epoch']
+
+      let [x, y] = d3.select(`#dot-${selected_neuron['selected']}`)
+        .data()[0][epoch]
+
+      neighbors = this.emb_data
+        .sort((a, b) => {
+          let [x_a, y_a] = a[epoch]
+          let [x_b, y_b] = b[epoch]
+          let d_a_sq = (x - x_a) ** 2 + (y - y_a) ** 2
+          let d_b_sq = (x - x_b) ** 2 + (y - y_b) ** 2
+          return d_a_sq - d_b_sq
+        })
+        .map(x => x['neuron'])
+        .filter(x => {
+          if (x == selected_neuron['selected']) {
+            return false
+          } else {
+            return true
+          }
+        })
+        .slice(0, 10)
+    }
+    return neighbors
   }
 
 }
@@ -500,6 +593,19 @@ export class NNView {
     title.innerText = 'Selected Neuron'
     this.selected_view.appendChild(title)
 
+    let symbol = d3.select(this.selected_view)
+      .append('svg')
+      .attr('id', 'selected-neuron-symbol-svg')
+      .append('g')
+      .attr('id', 'selected-neuron-symbol-g')
+      .append('circle')
+      .attr('r', 8)
+      .style('opacity', emb_style['highlight-opacity'])
+      .attr('fill', get_css_var('--dodgerblue'))
+      .attr('stroke-width', '2px')
+      .attr('stroke', get_css_var('--darkblue'))
+
+    let this_class = this
     if (selected_neuron['selected'] != null) {
 
       this.gen_card(
@@ -521,7 +627,33 @@ export class NNView {
     title.innerText = 'Most Related Neurons'
     this.nei_view.appendChild(title)
 
-    // Find neighbors
+    let symbol = d3.select(this.nei_view)
+      .append('svg')
+      .attr('id', 'nei-symbol-svg')
+      .append('g')
+      .attr('id', 'nei-symbol-g')
+      .append('circle')
+      .attr('r', 8)
+      .style('opacity', emb_style['highlight-opacity'])
+      .attr('fill', get_css_var('--dodgerblue'))
+
+    // Show neighbors
+    let neighbors = this.find_neigbors()
+    let nei_list_view = document.createElement('div')
+    nei_list_view.id = 'NNView-nei-list'
+    this.nei_view.appendChild(nei_list_view)
+    for (let nei of neighbors) {
+      this.gen_card(
+        `NNView-neighbors-${nei}`,
+        nei, 
+        nei_list_view
+      )  
+    }
+    
+
+  }
+
+  find_neigbors() {
     let neighbors = []
     if (selected_neuron['selected'] != null) {
       let epoch = embedding_setup['epoch']
@@ -544,20 +676,7 @@ export class NNView {
         })
         .slice(0, 10)
     }
-
-    // Show neighbors
-    let nei_list_view = document.createElement('div')
-    nei_list_view.id = 'NNView-nei-list'
-    this.nei_view.appendChild(nei_list_view)
-    for (let nei of neighbors) {
-      this.gen_card(
-        `NNView-neighbors-${nei}`,
-        nei, 
-        nei_list_view
-      )  
-    }
-    
-
+    return neighbors
   }
 
   gen_card(id, neuron, parent) {
@@ -583,6 +702,14 @@ export class NNView {
     // Add neighbor neurons
     this.gen_neighbors()
 
+  }
+
+  is_in_selected_group(neuron) {
+    if (selected_groups['neurons'].has(neuron)) {
+      return true
+    } else {
+      return false
+    }
   }
 
   parse_emb_data(data) {

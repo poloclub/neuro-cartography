@@ -272,7 +272,6 @@ export class ExampleViewCard {
         .attr('height', patch_style['card-height'])
         .attr('preserveAspectRatio', 'none')
 
-
   }
 
   gen_wrapper() {

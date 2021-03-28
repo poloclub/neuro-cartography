@@ -16,7 +16,8 @@ export var selected_class = {
 }
 
 export var selected_groups = {
-  'groups': new Set()
+  'groups': new Set(),
+  'neurons': new Set()
 }
 
 export var selected_neuron = {

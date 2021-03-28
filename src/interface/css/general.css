@@ -19,6 +19,7 @@ body {
   --hotpink: #ff0080;
   --blueviolet: blueviolet;
   --dodgerblue: dodgerblue;
+  --darkblue: var(--dark_navy);
 }
 
 #main {
