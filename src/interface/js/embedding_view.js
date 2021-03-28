@@ -267,6 +267,14 @@ export class EmbeddingView {
     let view_id = `ex-neuron-${neuron}`
     d3.select(`#${view_id}`)
       .style('display', 'none')
+
+    // Highlight embedding of clicked groups
+    for (let g of selected_groups['groups']) {
+      d3.selectAll(`.emb-dot-group-${g}`)
+        .attr('fill', get_css_var('--hotpink'))
+        .attr('r', emb_style['highlight-r'])
+        .raise()
+    }
   }
 
   dot_click(neuron) {

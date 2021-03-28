@@ -1070,6 +1070,7 @@ export class GraphView {
       d3.selectAll(`.emb-dot-group-${g}`)
         .attr('fill', get_css_var('--hotpink'))
         .attr('r', emb_style['highlight-r'])
+        .raise()
     }
 
     // Highlight embedding of hovered group
@@ -1122,6 +1123,7 @@ export class GraphView {
           d3.selectAll(`.emb-dot-group-${g}`)
             .attr('fill', get_css_var('--hotpink'))
             .attr('r', emb_style['highlight-r'])
+            .raise()
         }
 
         // Highlight node of selected group

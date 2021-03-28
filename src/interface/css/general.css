@@ -17,6 +17,8 @@ body {
   --bright_yellow_logo: #ddd9a5;
   --bright_yellow_text: rgb(255, 210, 0);
   --hotpink: #ff0080;
+  --blueviolet: blueviolet;
+  --dodgerblue: dodgerblue;
 }
 
 #main {
