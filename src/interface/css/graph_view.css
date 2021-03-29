@@ -77,9 +77,9 @@
 }
 
 .layer-name {
-  font-size: 100px;
+  font-size: 120px;
   stroke: white;
-  stroke-width: 10px;
+  stroke-width: 15px;
   stroke-linecap: butt;
   stroke-linejoin: miter;
   paint-order: stroke;

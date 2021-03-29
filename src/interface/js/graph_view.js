@@ -702,6 +702,7 @@ export class GraphView {
         selected_groups['neurons'] = new Set()
         d3.selectAll('.emb-dot')
           .attr('fill', get_css_var('--gray'))
+          .style('opacity', emb_style['normal-opacity'])
 
         this_class.parse_node_data(data[0])
         this_class.parse_edge_data(data[1])
@@ -1004,7 +1005,38 @@ export class GraphView {
         })
   }
 
+  highlight_clicked_embedding() {
+
+    // Turn off other embeddings first
+    d3.selectAll('.emb-dot')
+      .attr('fill', get_css_var('--gray'))
+      .attr('width', emb_style['normal-r'])
+      .attr('height', emb_style['normal-r'])
+      .style('opacity', emb_style['normal-opacity'])
+
+    // Highlight embedding of clicked groups
+    for (let g of selected_groups['groups']) {
+      d3.selectAll(`.emb-dot-group-${g}`)
+        .attr('fill', get_css_var('--hotpink'))
+        .attr('width', emb_style['highlight-r'])
+        .attr('height', emb_style['highlight-r'])
+        .style('opacity', emb_style['highlight-opacity'])
+        .raise()
+    }
+
+  }
+
+  highligt_node() {
+
+  }
+
   mouseenter_node(node) {   
+
+    // Turn off all others first
+    d3.selectAll('.example-view-wrapper')
+      .style('display', 'none')
+    d3.selectAll('.node')
+      .attr('fill', get_css_var('--gray'))
 
     // Generate example view
     let [blk, group] = node.id.split('-g-')
@@ -1017,12 +1049,6 @@ export class GraphView {
       )
       ex_view.gen_example_view()
     }
-
-    // Turn off all others first
-    d3.selectAll('.example-view-wrapper')
-      .style('display', 'none')
-    d3.selectAll('.node')
-      .attr('fill', get_css_var('--gray'))
 
     // Example view scale
     let curr_scale = d3.select('#graph_view-node-g').attr('transform')
@@ -1061,24 +1087,16 @@ export class GraphView {
       .style('transform', `scale(${3 * curr_scale})`)
     shown_group['group'] = `${blk}-${group}`
 
-    // Turn off other embeddings first
-    d3.selectAll('.emb-dot')
-      .attr('fill', get_css_var('--gray'))
-      .attr('r', emb_style['normal-r'])
-
-    // Highlight embedding of clicked groups
-    for (let g of selected_groups['groups']) {
-      d3.selectAll(`.emb-dot-group-${g}`)
-        .attr('fill', get_css_var('--hotpink'))
-        .attr('r', emb_style['highlight-r'])
-        .raise()
-    }
+    // Highlight clicked embedding
+    this.highlight_clicked_embedding()
 
     // Highlight embedding of hovered group
     for (let neuron of neurons) {
       d3.select('#dot-' + neuron)
         .attr('fill', get_css_var('--hotpink'))
-        .attr('r', emb_style['hover-r'])
+        .attr('width', emb_style['hover-r'])
+        .attr('height', emb_style['hover-r'])
+        .style('opacity', emb_style['highlight-opacity'])
     }
 
     // Highlight node of selected group
@@ -1103,6 +1121,7 @@ export class GraphView {
     let group_id = `${blk}-${group}`
     shown_group['group'] = 'None'
 
+    let this_class = this
     setTimeout(function() {
       if (shown_group['group'] != group_id) {
 
@@ -1120,13 +1139,8 @@ export class GraphView {
           .attr('r', emb_style['normal-r'])
 
         // Highlight embedding of clicked groups
-        for (let g of selected_groups['groups']) {
-          d3.selectAll(`.emb-dot-group-${g}`)
-            .attr('fill', get_css_var('--hotpink'))
-            .attr('r', emb_style['highlight-r'])
-            .raise()
-        }
-
+        this_class.highlight_clicked_embedding()
+        
         // Highlight node of selected group
         for (let g of selected_groups['groups']) {
           d3.select(`#${g}`)

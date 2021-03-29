@@ -180,10 +180,10 @@ export class EmbeddingView {
     let this_class = this
 
     d3.select('#embedding-g')
-      .selectAll('circle')
+      .selectAll('rect')
       .data(this.emb_data)
       .enter()
-      .append('circle')
+      .append('rect')
         .attr('id', d => { 
           return 'dot-' + d['neuron'] 
         })
@@ -194,12 +194,14 @@ export class EmbeddingView {
           let class3 = 'emb-dot-' + neuron.split('-')[0]
           return [class1, class2, class3].join(' ')
         })
-        .attr('r', emb_style['normal-r'])
-        .attr('cx', d => { 
+        .style('opacity', emb_style['normal-opacity'])
+        .attr('width', emb_style['normal-r'])
+        .attr('height', emb_style['normal-r'])
+        .attr('x', d => { 
           let e = embedding_setup['epoch']
           return x_scale(d[e][0]) 
         })
-        .attr('cy', d => { 
+        .attr('y', d => { 
           let e = embedding_setup['epoch']
           return y_scale(d[e][1]) 
         })
@@ -598,12 +600,8 @@ export class NNView {
       .attr('id', 'selected-neuron-symbol-svg')
       .append('g')
       .attr('id', 'selected-neuron-symbol-g')
-      .append('circle')
-      .attr('r', 8)
-      .style('opacity', emb_style['highlight-opacity'])
-      .attr('fill', get_css_var('--dodgerblue'))
-      .attr('stroke-width', '2px')
-      .attr('stroke', get_css_var('--darkblue'))
+      .append('rect')
+      .attr('id', 'selected-neuron-symbol')
 
     let this_class = this
     if (selected_neuron['selected'] != null) {
@@ -632,10 +630,8 @@ export class NNView {
       .attr('id', 'nei-symbol-svg')
       .append('g')
       .attr('id', 'nei-symbol-g')
-      .append('circle')
-      .attr('r', 8)
-      .style('opacity', emb_style['highlight-opacity'])
-      .attr('fill', get_css_var('--dodgerblue'))
+      .append('rect')
+      .attr('id', 'nei-symbol')
 
     // Show neighbors
     let neighbors = this.find_neigbors()

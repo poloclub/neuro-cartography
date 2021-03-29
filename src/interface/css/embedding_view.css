@@ -16,7 +16,6 @@
 
 .emb-dot {
   cursor: pointer;
-  opacity: 0.1;
 }
 
 #embedding_header {
@@ -72,12 +71,16 @@
 }
 
 .NNView-neuron-card-wrapper {
-  border-bottom: solid var(--bright_gray_border) 1px;
+  /* border-bottom: solid var(--bright_gray_border) 1px; */
   height: 80px;
 }
 
 #NNView-selected-neuron-title {
   display: inline-block;
+}
+
+#NNView-selected-neuron-card {
+  border-bottom: solid var(--bright_gray_border) 1px;
 }
 
 #NNView-nei-list {
@@ -93,6 +96,25 @@
 
 #selected-neuron-symbol-g {
   transform: translate(13px, 20px);
+}
+
+#selected-neuron-symbol {
+  transform: translate(-3px, -6px);
+  stroke-linecap: butt;
+  stroke-width: 6px;
+  width: 12px;
+  height: 12px;
+  fill: white;
+  stroke: var(--gray);
+  opacity: 0.5;
+}
+
+#nei-symbol {
+  transform: translate(-3px, -8px);
+  width: 18px;
+  height: 18px;
+  fill: var(--dodgerblue);
+  opacity: 0.5;
 }
 
 #NNView-nei-neuron-title {

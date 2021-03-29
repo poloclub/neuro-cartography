@@ -31,8 +31,11 @@ export var graph_style = {
   'blk_bg': {
     'height': 200,
     'color': {
-      'normal': '#fbb4ae',
-      '3x3': '#b3cde3',
+      'normal': '#fdc086',
+      // '#fbb4ae',
+      '3x3': 'rgb(245, 198, 40)',
+      // '#ffff99',
+      // '#b3cde3',
       '5x5': '#ccebc5'
     },
     'opacity': 0.3,
@@ -53,14 +56,19 @@ export var graph_style = {
       'mv_y': 40
     },
     'color': {
-      'normal': '#fbb4ae',
-      '3x3': '#b3cde3',
-      '5x5': '#bbdab4'
+      'normal': '#fdc086',
+      // '#fbb4ae',
+      '3x3': 'rgb(245, 198, 40)',
+      // '#ccebc5'
+      //  '#ffff99',
+      // '#b3cde3',
+      '5x5': '#aac9a3'
+      // '#bbdab4'
     },
   },
   'edge_color': 'rgb(200, 200, 200)',
-  'edge_width_min': 3,
-  'edge_width_max': 15
+  'edge_width_min': 5,
+  'edge_width_max': 20
 }
 
 export var patch_style = {
@@ -88,9 +96,10 @@ export var cascade_style = {
 }
 
 export var emb_style = {
-  'normal-r': 3,
-  'highlight-r': 10,
+  'normal-r': 6,
+  'highlight-r': 20,
   'hover-r': 20,
   'normal-opacity': 0.1,
-  'highlight-opacity': 0.3
+  'highlight-opacity': 0.5,
+  'symbol-s': 15
 }
