@@ -96,10 +96,11 @@ export var cascade_style = {
 }
 
 export var emb_style = {
-  'normal-r': 6,
+  'normal-r': 5,
   'highlight-r': 20,
   'hover-r': 20,
   'normal-opacity': 0.1,
   'highlight-opacity': 0.5,
-  'symbol-s': 15
+  'symbol-s': 15,
+  'stroke-width': 8
 }
