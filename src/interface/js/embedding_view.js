@@ -259,6 +259,11 @@ export class EmbeddingView {
     // Highlight the clicked neuron
     this.highlight_clicked_dot()
     
+    // Highlight hovered dot
+    d3.select(`#dot-${neuron}`)
+      .attr('width', emb_style['highlight-r'])
+      .attr('height', emb_style['highlight-r'])
+      .style('opacity', emb_style['highlight-opacity'])
 
   }
 
@@ -268,7 +273,9 @@ export class EmbeddingView {
     d3.selectAll('.emb-dot')
       .attr('fill', get_css_var('--gray'))
       .style('stroke', 'none')
-      .attr('r', emb_style['normal-r'])
+      .attr('width', emb_style['normal-r'])
+      .attr('height', emb_style['normal-r'])
+      .style('opacity', emb_style['normal-opacity'])
 
     // Dehighlight group
     let group = this.neuron_to_group[neuron]
@@ -284,7 +291,8 @@ export class EmbeddingView {
     for (let g of selected_groups['groups']) {
       d3.selectAll(`.emb-dot-group-${g}`)
         .attr('fill', get_css_var('--hotpink'))
-        .attr('r', emb_style['highlight-r'])
+        .attr('width', emb_style['highlight-r'])
+        .attr('height', emb_style['highlight-r'])
         .style('opacity', emb_style['highlight-opacity'])
         .raise()
     }
@@ -360,7 +368,8 @@ export class EmbeddingView {
             return get_css_var('--dodgerblue')
           }
         })
-        .attr('r', emb_style['highlight-r'])
+        .attr('width', emb_style['highlight-r'])
+        .attr('height', emb_style['highlight-r'])
     }
   }
 
