@@ -3,7 +3,8 @@ import {
   data_path, graph_style, cascade_style, emb_style, patch_style 
 } from './constant.js'
 import {
-  shown_group, mode, selected_groups, selected_class, filter_nodes
+  shown_group, mode, selected_groups, selected_class, filter_nodes,
+  selected_neuron
 } from './variable.js'
 import { Dropdown } from './dropdown.js'
 import { get_css_var } from './utils.js'
@@ -1019,17 +1020,46 @@ export class GraphView {
     for (let g of selected_groups['groups']) {
       d3.selectAll(`.emb-dot-group-${g}`)
         .attr('fill', get_css_var('--hotpink'))
-        .style('stroke', get_css_var('--hotpink'))
         .attr('width', emb_style['highlight-r'])
         .attr('height', emb_style['highlight-r'])
         .style('opacity', emb_style['highlight-opacity'])
         .raise()
     }
 
+    // Highlight embedding of selected neuron
+    let this_class = this
+    d3.select(`#dot-${selected_neuron['selected']}`)
+      .attr('fill', () => {
+        let neuron = selected_neuron['selected']
+        if (this_class.is_in_selected_group(neuron)) {
+          return 'white'
+        } else {
+          return get_css_var('--dodgerblue')
+        }
+      })
+      .style('stroke', () => {
+        let neuron = selected_neuron['selected']
+        if (this_class.is_in_selected_group(neuron)) {
+          return get_css_var('--hotpink')
+        } else {
+          return 'none'
+        }
+      })
+      .attr('r', emb_style['highlight-r'])
+      .style('opacity', emb_style['highlight-opacity'])
+
   }
 
   highligt_node() {
 
+  }
+
+  is_in_selected_group(neuron) {
+    if (selected_groups['neurons'].has(neuron)) {
+      return true
+    } else {
+      return false
+    }
   }
 
   show_cluster_popup(node) {
@@ -1102,10 +1132,16 @@ export class GraphView {
     let [blk, group] = node.id.split('-g-')
     group = 'g-' + group
     let neurons = this.node_data[blk][group]['group']
+    let this_class = this
     for (let neuron of neurons) {
       d3.select('#dot-' + neuron)
-        .attr('fill', get_css_var('--hotpink'))
-        .style('stroke', get_css_var('--hotpink'))
+        .attr('fill', () => {
+          if (neuron == selected_neuron['selected']) {
+            return 'white'
+          } else {
+            return get_css_var('--hotpink')
+          }
+        })
         .attr('width', emb_style['hover-r'])
         .attr('height', emb_style['hover-r'])
         .style('opacity', emb_style['highlight-opacity'])
