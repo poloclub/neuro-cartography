@@ -82,22 +82,26 @@ export class GraphViewHeader {
     title.innerText = 'Model'
     model.appendChild(title)
 
-    // Dropdown
-    let dropdown = new Dropdown('model-selection')
-    dropdown.gen_dropdown('InceptionV1')
-    for (let item of ['InceptionV1', 'Compressed-InceptionV1']) {
-      dropdown.add_dropdown_menu_item(
-        item,
-        item.replace('-', ' '),
-        {
-          'mouseover': function() {  },
-          'mouseout': function() {  },
-          'click': function() {  }
-        }
-      )
-    }
-    
-    model.appendChild(dropdown.get_dropdown()) 
+    // Model name
+    let model_name = document.createElement('div')
+    model_name.innerText = 'InceptionV1'
+    model.appendChild(model_name)
+
+    // TODO: We can add dropdown if we want multiple models
+    // let dropdown = new Dropdown('model-selection')
+    // dropdown.gen_dropdown('InceptionV1')
+    // for (let item of ['InceptionV1', 'Compressed-InceptionV1']) {
+    //   dropdown.add_dropdown_menu_item(
+    //     item,
+    //     item.replace('-', ' '),
+    //     {
+    //       'mouseover': function() {  },
+    //       'mouseout': function() {  },
+    //       'click': function() {  }
+    //     }
+    //   )
+    // }
+    // model.appendChild(dropdown.get_dropdown()) 
 
   }
 
