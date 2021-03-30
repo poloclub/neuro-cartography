@@ -4,7 +4,7 @@ import {
 } from './constant.js'
 import {
   shown_group, mode, selected_groups, selected_class, filter_nodes,
-  selected_neuron
+  selected_neuron, most_related_neurons
 } from './variable.js'
 import { Dropdown } from './dropdown.js'
 import { get_css_var } from './utils.js'
@@ -1006,7 +1006,7 @@ export class GraphView {
         })
   }
 
-  highlight_clicked_embedding() {
+  highlight_selcted_and_nei_embedding() {
 
     // Turn off other embeddings first
     d3.selectAll('.emb-dot')
@@ -1015,6 +1015,22 @@ export class GraphView {
       .attr('width', emb_style['normal-r'])
       .attr('height', emb_style['normal-r'])
       .style('opacity', emb_style['normal-opacity'])
+
+    // Highlight most related neurons
+    let neighbors = most_related_neurons['nei']
+    let this_class = this
+    for (let nei of neighbors) {
+      d3.select(`#dot-${nei}`)
+        .attr('fill', () => {
+          if (this_class.is_in_selected_group(nei)) {
+            return get_css_var('--hotpink')
+          } else {
+            return get_css_var('--dodgerblue')
+          }
+        })
+        .attr('width', emb_style['highlight-r'])
+        .attr('height', emb_style['highlight-r'])
+    }
 
     // Highlight embedding of clicked groups
     for (let g of selected_groups['groups']) {
@@ -1027,7 +1043,6 @@ export class GraphView {
     }
 
     // Highlight embedding of selected neuron
-    let this_class = this
     d3.select(`#dot-${selected_neuron['selected']}`)
       .attr('fill', () => {
         let neuron = selected_neuron['selected']
@@ -1045,9 +1060,27 @@ export class GraphView {
           return 'none'
         }
       })
-      .attr('r', emb_style['highlight-r'])
+      .attr('width', emb_style['highlight-r'])
+      .attr('height', emb_style['highlight-r'])
       .style('opacity', emb_style['highlight-opacity'])
 
+  }
+
+  highlight_nei_dots() {
+    let neighbors = most_related_neurons['nei']
+    let this_class = this
+    for (let nei of neighbors) {
+      d3.select(`#dot-${nei}`)
+        .attr('fill', () => {
+          if (this_class.is_in_selected_group(nei)) {
+            return get_css_var('--hotpink')
+          } else {
+            return get_css_var('--dodgerblue')
+          }
+        })
+        .attr('width', emb_style['highlight-r'])
+        .attr('height', emb_style['highlight-r'])
+    }
   }
 
   highligt_node() {
@@ -1123,10 +1156,7 @@ export class GraphView {
       .attr('fill', get_css_var('--gray'))
 
     // Show cluster popup
-    this.show_cluster_popup(node)
-    
-    // Highlight clicked embedding
-    this.highlight_clicked_embedding()
+    this.show_cluster_popup(node)    
 
     // Highlight embedding of hovered group
     let [blk, group] = node.id.split('-g-')
@@ -1147,6 +1177,10 @@ export class GraphView {
         .style('opacity', emb_style['highlight-opacity'])
     }
 
+    // Highlight selected neuon and neighbors' embedding
+    this.highlight_selcted_and_nei_embedding()
+    
+    
     // Highlight node of selected group
     for (let g of selected_groups['groups']) {
       d3.select(`#${g}`)
@@ -1188,7 +1222,7 @@ export class GraphView {
         }
 
         // Highlight embedding of clicked groups
-        this_class.highlight_clicked_embedding()
+        this_class.highlight_selcted_and_nei_embedding()
         
       } 
     }, 800)
@@ -1198,7 +1232,7 @@ export class GraphView {
       .classed('flowline', false)
 
     // Highlight embedding of clicked groups
-    this.highlight_clicked_embedding()
+    this.highlight_selcted_and_nei_embedding()
 
     // Highlight node of selected group
     for (let g of selected_groups['groups']) {

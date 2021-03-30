@@ -8,7 +8,8 @@ import {
   embedding_setup, 
   selected_class, 
   selected_groups,
-  selected_neuron
+  selected_neuron, 
+  most_related_neurons
 } from './variable.js'
 
 ////////////////////////////////////////////////////////////
@@ -297,11 +298,11 @@ export class EmbeddingView {
         .raise()
     }
 
-    // Highlight clicked dot
-    this.highlight_clicked_dot()
-
     // Highlight most related dots
     this.highlight_nei_dots()
+
+    // Highlight clicked dot
+    this.highlight_clicked_dot()
 
   }
 
@@ -349,7 +350,8 @@ export class EmbeddingView {
           return 'none'
         }
       })
-      .attr('r', emb_style['highlight-r'])
+      .attr('width', emb_style['highlight-r'])
+      .attr('height', emb_style['highlight-r'])
       .style('opacity', emb_style['highlight-opacity'])
 
 
@@ -361,9 +363,8 @@ export class EmbeddingView {
     for (let nei of neighbors) {
       d3.select(`#dot-${nei}`)
         .attr('fill', () => {
-          let neuron = selected_neuron['selected']
-          if (this_class.is_in_selected_group(neuron)) {
-            return get_css_var('--dodgerblue')
+          if (this_class.is_in_selected_group(nei)) {
+            return get_css_var('--hotpink')
           } else {
             return get_css_var('--dodgerblue')
           }
@@ -399,6 +400,8 @@ export class EmbeddingView {
         })
         .slice(0, 10)
     }
+    most_related_neurons['nei'] = neighbors
+
     return neighbors
   }
 
@@ -687,6 +690,7 @@ export class NNView {
         })
         .slice(0, 10)
     }
+    most_related_neurons['nei'] = neighbors
     return neighbors
   }
 

@@ -32,3 +32,8 @@ export var filter_nodes = {
   'cnt_min': 0, // means 0
   'cnt_max': 10 // means 5 * cnt_unit
 }
+
+
+export var most_related_neurons = {
+  'nei': []
+}
