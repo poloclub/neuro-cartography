@@ -1067,6 +1067,7 @@ export class GraphView {
         })
         .attr('width', emb_style['highlight-r'])
         .attr('height', emb_style['highlight-r'])
+        .style('opacity', emb_style['highlight-opacity'])
         .raise()
     }
 
@@ -1189,7 +1190,10 @@ export class GraphView {
       .attr('fill', get_css_var('--gray'))
 
     // Show cluster popup
-    this.show_cluster_popup(node)    
+    this.show_cluster_popup(node)
+
+    // Highlight selected neuon and neighbors' embedding
+    this.highlight_selected_and_nei_embedding()
 
     // Highlight embedding of hovered group
     let [blk, group] = node.id.split('-g-')
@@ -1209,10 +1213,6 @@ export class GraphView {
         .attr('height', emb_style['hover-r'])
         .style('opacity', emb_style['highlight-opacity'])
     }
-
-    // Highlight selected neuon and neighbors' embedding
-    this.highlight_selected_and_nei_embedding()
-    
     
     // Highlight node of selected group
     for (let g of selected_groups['groups']) {
