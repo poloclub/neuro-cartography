@@ -21,3 +21,4 @@ data/InceptionV1/co_activation/*.json
 data/InceptionV1/hash_value_old2_before_preprocess/
 data/InceptionV1-compressed/
 data/InceptionV1/summit/
+data/InceptionV1/cascade/
