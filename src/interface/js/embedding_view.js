@@ -561,7 +561,18 @@ export class EmbeddingHeader {
     }
 
     // Neurons of selected class
-    // TODO:
+    if (item == 'Neurons-of-class') {
+      d3.selectAll('.emb-dot')
+        .style('display', (d) => {
+          let cls = d3.select(`#dot-${d['neuron']}`).attr('class')
+          let group_cls = cls.split(' ')[1]
+          if (group_cls.includes('undefined')) {
+            return 'none'
+          } else {
+            return 'block'
+          }
+        })
+    }
 
   }
 
