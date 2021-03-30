@@ -8,7 +8,7 @@ export var mode = {
 
 export var embedding_setup = {
   'filtering': 'All-neurons', // 'All-neurons', 'Neurons-of-Class', 'Neurons-of-Selected-groups'
-  'epoch': 5 // [1, 2, 3, 4, 5]
+  'epoch': 3 // [0, 1, 2, 3, 4, 5]
 }
 
 export var selected_class = {

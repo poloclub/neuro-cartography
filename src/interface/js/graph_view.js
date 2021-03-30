@@ -727,6 +727,7 @@ export class GraphView {
   
   refresh_emb() {
 
+  
     let n2g = this.get_neuron_group_mapping()
     d3.selectAll('.emb-dot')
       .attr('class', (d) => {
@@ -738,9 +739,11 @@ export class GraphView {
       })
       .attr('width', emb_style['normal-r'])
       .attr('height', emb_style['normal-r'])
+      .attr('fill', get_css_var('--gray'))
       .attr('opacity', emb_style['normal-opacity'])
       
-    this.highlight_nei_dots()
+
+    this.highlight_selected_and_nei_embedding()
   }
   
 
@@ -1044,6 +1047,8 @@ export class GraphView {
   }
 
   highlight_selected_and_nei_embedding() {
+
+    
 
     // Turn off other embeddings first
     d3.selectAll('.emb-dot')

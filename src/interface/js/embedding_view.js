@@ -201,11 +201,11 @@ export class EmbeddingView {
         .attr('width', emb_style['normal-r'])
         .attr('height', emb_style['normal-r'])
         .attr('x', d => { 
-          let e = embedding_setup['epoch']
+          let e = embedding_setup['epoch'] + 1
           return x_scale(d[e][0]) 
         })
         .attr('y', d => { 
-          let e = embedding_setup['epoch']
+          let e = embedding_setup['epoch'] + 1
           return y_scale(d[e][1]) 
         })
         .on('mouseover', d => { 
@@ -375,7 +375,7 @@ export class EmbeddingView {
   find_neigbors() {
     let neighbors = []
     if (selected_neuron['selected'] != null) {
-      let epoch = embedding_setup['epoch']
+      let epoch = embedding_setup['epoch'] + 1
 
       let [x, y] = d3.select(`#dot-${selected_neuron['selected']}`)
         .data()[0][epoch]
@@ -501,6 +501,48 @@ export class EmbeddingHeader {
 
   }
 
+  gen_dim() {
+
+    // Dimension
+    let dim = document.createElement('div')
+    dim.id = `${this.id}-dim`
+    dim.className = 'embedding-header-component'
+    this.view.appendChild(dim)
+
+    // Title
+    let title = document.createElement('div')
+    title.className = 'embedding-header-title'
+    title.innerText = 'Dimension'
+    dim.appendChild(title)
+
+    // Text
+    let text = document.createElement('div')
+    text.innerText = '30'
+    dim.appendChild(text)
+
+  }
+
+  gen_reduction() {
+
+    // Dimension
+    let dim = document.createElement('div')
+    dim.id = `${this.id}-reduce`
+    dim.className = 'embedding-header-component'
+    this.view.appendChild(dim)
+
+    // Title
+    let title = document.createElement('div')
+    title.className = 'embedding-header-title'
+    title.innerText = 'Reduced to 2D By'
+    dim.appendChild(title)
+
+    // Text
+    let text = document.createElement('div')
+    text.innerText = 'UMAP'
+    dim.appendChild(text)
+
+  }
+
   update_embedding() {
 
     // Update xy scale
@@ -512,20 +554,23 @@ export class EmbeddingHeader {
       .transition()
       .duration(1000)
       .attr('cx', d => {
-        return this_class.x_scale(d[embedding_setup['epoch']][0])
+        let e = embedding_setup['epoch'] + 1
+        console.log(d)
+        return this_class.x_scale(d[e][0])
       })
       .attr('cy', d => {
-        return this_class.y_scale(d[embedding_setup['epoch']][1])
+        let e = embedding_setup['epoch'] + 1
+        return this_class.y_scale(d[e][1])
       })
 
   }
 
   update_xy_scale() {
-
-    let min_x = this.emb_range[embedding_setup['epoch']]['x'][0]
-    let max_x = this.emb_range[embedding_setup['epoch']]['x'][1]
-    let min_y = this.emb_range[embedding_setup['epoch']]['y'][0]
-    let max_y = this.emb_range[embedding_setup['epoch']]['y'][1]
+    let e = embedding_setup['epoch'] + 1
+    let min_x = this.emb_range[e]['x'][0]
+    let max_x = this.emb_range[e]['x'][1]
+    let min_y = this.emb_range[e]['y'][0]
+    let max_y = this.emb_range[e]['y'][1]
 
     this.x_scale = d3.scaleLinear()
       .domain([min_x, max_x])

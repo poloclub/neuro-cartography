@@ -102,9 +102,11 @@ class Main {
         // Generate embedding view
         this_class.generate_neighbor_view(
           data.slice(0, 6)
+          // data[0]
         )
         this_class.generate_embedding_view(
           data.slice(0, 6)
+          // data[0]
         )
         this_class.generate_embedding_header()
 
@@ -125,7 +127,9 @@ class Main {
       this.embedding_view
     )
     emb_header.gen_filtering()
-    emb_header.gen_epoch()
+    // emb_header.gen_epoch()
+    emb_header.gen_dim()
+    emb_header.gen_reduction()
   }
 
   generate_embedding_view(data) {
