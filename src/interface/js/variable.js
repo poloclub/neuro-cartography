@@ -37,3 +37,7 @@ export var filter_nodes = {
 export var most_related_neurons = {
   'nei': []
 }
+
+export var neuron_to_group = {
+  'n2g': {}
+}

@@ -9,7 +9,8 @@ import {
   selected_class, 
   selected_groups,
   selected_neuron, 
-  most_related_neurons
+  most_related_neurons,
+  neuron_to_group
 } from './variable.js'
 
 ////////////////////////////////////////////////////////////
@@ -30,7 +31,7 @@ export class EmbeddingView {
 
     // Node Data
     this.node_data = graph_view.node_data
-    this.neuron_to_group = this.get_neuron_group_mapping()
+    this.get_neuron_group_mapping()
 
     // Embedding data
     this.emb_data = []
@@ -93,6 +94,7 @@ export class EmbeddingView {
         }
       }
     }
+    neuron_to_group['n2g'] = n2g
     return n2g
   }
 
@@ -177,7 +179,7 @@ export class EmbeddingView {
 
     let x_scale = this.x_scale
     let y_scale = this.y_scale
-    let n2g = this.neuron_to_group
+    let n2g = neuron_to_group['n2g']
     let this_class = this
 
     d3.select('#embedding-g')
@@ -221,7 +223,7 @@ export class EmbeddingView {
   }
 
   is_in_selected_group(neuron) {
-    let g = this.neuron_to_group[neuron]
+    let g = neuron_to_group['n2g'][neuron]
     if (selected_groups['groups'].has(g)) {
       return true
     } else {
@@ -247,12 +249,12 @@ export class EmbeddingView {
       .style('top', (d3.event.pageY - 30) + 'px')
 
     // Highlight group
-    let group = this.neuron_to_group[neuron]
+    let group = neuron_to_group['n2g'][neuron]
     d3.select(`#${group}`)
       .attr('fill', get_css_var('--hotpink'))
 
     // Highlight dots of neighbors in the same group
-    if (neuron in this.neuron_to_group) {
+    if (neuron in neuron_to_group['n2g']) {
       d3.selectAll('.emb-dot-group-' + group)
         .attr('fill', get_css_var('--hotpink'))
     }
@@ -279,7 +281,7 @@ export class EmbeddingView {
       .style('opacity', emb_style['normal-opacity'])
 
     // Dehighlight group
-    let group = this.neuron_to_group[neuron]
+    let group = neuron_to_group['n2g'][neuron]
     d3.select(`#${group}`)
       .attr('fill', get_css_var('--gray'))
 
@@ -334,25 +336,19 @@ export class EmbeddingView {
   highlight_clicked_dot() {
     let this_class = this
     d3.select(`#dot-${selected_neuron['selected']}`)
-      .attr('fill', () => {
-        let neuron = selected_neuron['selected']
-        if (this_class.is_in_selected_group(neuron)) {
-          return 'white'
-        } else {
-          return get_css_var('--dodgerblue')
-        }
-      })
+      .attr('fill',  'white')
       .style('stroke', () => {
         let neuron = selected_neuron['selected']
         if (this_class.is_in_selected_group(neuron)) {
           return get_css_var('--hotpink')
         } else {
-          return 'none'
+          return get_css_var('--dodgerblue')
         }
       })
       .attr('width', emb_style['highlight-r'])
       .attr('height', emb_style['highlight-r'])
       .style('opacity', emb_style['highlight-opacity'])
+      .raise()
 
 
   }
@@ -371,6 +367,8 @@ export class EmbeddingView {
         })
         .attr('width', emb_style['highlight-r'])
         .attr('height', emb_style['highlight-r'])
+        .style('opacity', emb_style['highlight-opacity'])
+        .raise()
     }
   }
 

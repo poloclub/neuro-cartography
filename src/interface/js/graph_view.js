@@ -4,7 +4,7 @@ import {
 } from './constant.js'
 import {
   shown_group, mode, selected_groups, selected_class, filter_nodes,
-  selected_neuron, most_related_neurons
+  selected_neuron, most_related_neurons, neuron_to_group
 } from './variable.js'
 import { Dropdown } from './dropdown.js'
 import { get_css_var } from './utils.js'
@@ -701,12 +701,11 @@ export class GraphView {
         d3.selectAll('.example-view-wrapper').remove()
         selected_groups['groups'] = new Set()
         selected_groups['neurons'] = new Set()
-        d3.selectAll('.emb-dot')
-          .attr('fill', get_css_var('--gray'))
-          .style('opacity', emb_style['normal-opacity'])
 
         this_class.parse_node_data(data[0])
         this_class.parse_edge_data(data[1])
+
+        this_class.refresh_emb()
         this_class.update_num_nodes()
         this_class.set_layer_layout_y()
         this_class.set_group_layout_x()
@@ -720,6 +719,40 @@ export class GraphView {
       }
     )
 
+  }
+  
+  refresh_emb() {
+
+    let n2g = this.get_neuron_group_mapping()
+    d3.selectAll('.emb-dot')
+      .attr('class', (d) => {
+        let neuron = d['neuron']
+        let class1 = 'emb-dot'
+        let class2 = 'emb-dot-group-' + n2g[neuron]
+        let class3 = 'emb-dot-' + neuron.split('-')[0]
+        return [class1, class2, class3].join(' ')
+      })
+      .attr('width', emb_style['normal-r'])
+      .attr('height', emb_style['normal-r'])
+      .attr('opacity', emb_style['normal-opacity'])
+      
+    this.highlight_nei_dots()
+  }
+  
+
+
+  get_neuron_group_mapping() {
+    let n2g = {}
+    let nodes_of_class = this.node_data
+    for (let blk in nodes_of_class) {
+      for (let g_num in nodes_of_class[blk]) {
+        for (let neuron of nodes_of_class[blk][g_num]['group']) {
+          n2g[neuron] = [blk, g_num].join('-')
+        }
+      }
+    }
+    neuron_to_group['n2g'] = n2g
+    return n2g
   }
 
   ///////////////////////////////////////////////////////
@@ -1006,7 +1039,7 @@ export class GraphView {
         })
   }
 
-  highlight_selcted_and_nei_embedding() {
+  highlight_selected_and_nei_embedding() {
 
     // Turn off other embeddings first
     d3.selectAll('.emb-dot')
@@ -1030,6 +1063,7 @@ export class GraphView {
         })
         .attr('width', emb_style['highlight-r'])
         .attr('height', emb_style['highlight-r'])
+        .raise()
     }
 
     // Highlight embedding of clicked groups
@@ -1044,25 +1078,19 @@ export class GraphView {
 
     // Highlight embedding of selected neuron
     d3.select(`#dot-${selected_neuron['selected']}`)
-      .attr('fill', () => {
-        let neuron = selected_neuron['selected']
-        if (this_class.is_in_selected_group(neuron)) {
-          return 'white'
-        } else {
-          return get_css_var('--dodgerblue')
-        }
-      })
+      .attr('fill', 'white')
       .style('stroke', () => {
         let neuron = selected_neuron['selected']
         if (this_class.is_in_selected_group(neuron)) {
           return get_css_var('--hotpink')
         } else {
-          return 'none'
+          return get_css_var('--dodgerblue')
         }
       })
       .attr('width', emb_style['highlight-r'])
       .attr('height', emb_style['highlight-r'])
       .style('opacity', emb_style['highlight-opacity'])
+      .raise()
 
   }
 
@@ -1080,6 +1108,7 @@ export class GraphView {
         })
         .attr('width', emb_style['highlight-r'])
         .attr('height', emb_style['highlight-r'])
+        .raise()
     }
   }
 
@@ -1178,7 +1207,7 @@ export class GraphView {
     }
 
     // Highlight selected neuon and neighbors' embedding
-    this.highlight_selcted_and_nei_embedding()
+    this.highlight_selected_and_nei_embedding()
     
     
     // Highlight node of selected group
@@ -1222,7 +1251,7 @@ export class GraphView {
         }
 
         // Highlight embedding of clicked groups
-        this_class.highlight_selcted_and_nei_embedding()
+        this_class.highlight_selected_and_nei_embedding()
         
       } 
     }, 800)
@@ -1232,7 +1261,7 @@ export class GraphView {
       .classed('flowline', false)
 
     // Highlight embedding of clicked groups
-    this.highlight_selcted_and_nei_embedding()
+    this.highlight_selected_and_nei_embedding()
 
     // Highlight node of selected group
     for (let g of selected_groups['groups']) {
