@@ -1610,7 +1610,7 @@ export class GraphView {
           let y = this_class.blk_y[blk]
           return y
         })
-        .attr('fill', get_css_var('--gray'))
+        .attr('fill', get_css_var('--hot-pink'))
         .attr('width', graph_style['node_w'])
         .attr('height', graph_style['node_h'])
         .style('display', 'block')
@@ -1714,10 +1714,17 @@ export class GraphView {
   draw_cascade_edges() {
 
     let this_class = this
-    // this.gen_edge_width_scale()
 
     let selected_group = cascade_group['selected']
     let initial_node = 'g-' + selected_group.split('-g-')[1]
+    let max_weight = 0
+    for (let item of Object.entries(this_class.edge_cascade[initial_node])) {
+      let avg_weight = item[1]['weight_sum'] / item[1]['total_num']
+      max_weight = d3.max([max_weight, avg_weight])
+    }
+    let width_scale = d3.scaleLinear()
+      .domain([0, max_weight])
+      .range([10, 30])
 
     d3.select('#graph_view-cascade-edge-g')
       .selectAll('edges')
@@ -1738,14 +1745,14 @@ export class GraphView {
         })
         .attr('d', function(d) {     
           let [prev_group, group] = d[0].split(',')          
-          // console.log(group, prev_group)
           return gen_path(group, prev_group) 
         })
         .attr('stroke-width', function(d) {
-          // TODO: stroke width
-          return 4
+          let avg_weight = d[1]['weight_sum'] / d[1]['total_num']
+          return width_scale(avg_weight)
         })
-        .attr('stroke', graph_style['edge_color'])
+        // .attr('stroke', graph_style['edge_color'])
+        .attr('stroke', get_css_var('--hotpink'))
         .style('display', function(d) {
 
           // Node id
