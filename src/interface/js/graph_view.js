@@ -228,33 +228,10 @@ export class GraphViewHeader {
         // Update mode
         mode['mode'] = 'cascade'
 
-        // Background color
-        d3.select('#graph_view-header')
-          .style('background', get_css_var('--gray'))
-        graph_view.style.background = get_css_var('--gray')
-
-        // Font color
-        d3.select('#graph_view-header')
-          .style('color', get_css_var('--bright_yellow_text'))
+        // Mode color
         d3.select('#normal-mode')
-          .style('color', 'gray')
+        .style('color', get_css_var('--bright_gray_text'))
         d3.select('#cascade-mode')
-          .style('color', get_css_var('--bright_yellow_text'))
-
-        // Model dropdown color
-        d3.select('#model-selection')
-          .style('color', get_css_var('--bright_yellow_text'))
-          .style('border-bottom', 
-            `solid 0.5px ${get_css_var('--bright_yellow_text')}`)
-        d3.select('#dropdown-menu-model-selection')
-          .style('color', get_css_var('--gray_text'))
-  
-        // Class dropdown color
-        d3.select('#class-selection')
-          .style('color', get_css_var('--bright_yellow_text'))
-          .style('border-bottom', 
-            `solid 0.5px ${get_css_var('--bright_yellow_text')}`)
-        d3.select('#dropdown-menu-class-selection')
           .style('color', get_css_var('--gray_text'))
 
         // Icon 
@@ -265,26 +242,11 @@ export class GraphViewHeader {
         // Update mode
         mode['mode'] = 'normal'
 
-        // Background color
-        d3.select('#graph_view-header')
-          .style('background', 'white')
-        graph_view.style.background = 'white'
-
-        // Font color
-        d3.select('#graph_view-header')
-          .style('color', get_css_var('--gray_text'))
-        d3.select('#class-selection')
-          .style('color', get_css_var('--gray_text'))
-          .style('border-bottom', 
-            `solid 0.5px ${get_css_var('--gray_text')}`)
-        d3.select('#model-selection')
-          .style('color', get_css_var('--gray_text'))
-          .style('border-bottom', 
-            `solid 0.5px ${get_css_var('--gray_text')}`)
+        // Mode color
         d3.select('#normal-mode')
           .style('color', get_css_var('--gray_text'))
         d3.select('#cascade-mode')
-        .style('color', get_css_var('--bright_gray_text'))
+          .style('color', get_css_var('--bright_gray_text'))
 
         // Icon 
         icon_i.style.transform = 'rotateY(180deg)'
