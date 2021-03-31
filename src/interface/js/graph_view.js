@@ -307,6 +307,10 @@ export class GraphViewHeader {
         // Icon 
         icon_i.style.transform = 'rotateY(0deg)'
 
+        // Make all node gray
+        d3.selectAll('.node')
+          .attr('gill', get_css_var('--gray'))
+
       } else {
 
         // Update mode
@@ -1279,6 +1283,25 @@ export class GraphView {
 
   mouseenter_node(node) {   
 
+    if (mode['mode'] == 'normal') {
+      this.mouseenter_normal(node)
+    } else {
+      this.mouseenter_cascade(node)
+    }
+
+  }
+
+  mouseenter_cascade(node) {
+
+    // Highlight node
+    d3.select(`#${node.id}`)
+      .attr('fill', get_css_var('--hotpink'))
+
+    // Show cluster popup
+    this.show_cluster_popup(node)    
+  }
+
+  mouseenter_normal(node) {
     // Turn off all others first
     d3.selectAll('.example-view-wrapper')
       .style('display', 'none')
@@ -1323,11 +1346,65 @@ export class GraphView {
     // Highlight edge
     d3.selectAll(`.edge-${group}`)
       .classed('flowline', true)
-
   }
 
   mouseleave_node(node) {
 
+    if (mode['mode'] == 'normal') {
+      this.mouseleave_normal(node)
+    } else {
+      this.mouseleave_cascade(node)
+    }
+
+  }
+
+  mouseleave_cascade(node) {
+
+    let [blk, group] = node.id.split('-g-')
+    group = `g-` + group
+    let group_id = `${blk}-${group}`
+    shown_group['group'] = 'None'
+
+    let this_class = this
+    setTimeout(function() {
+      if (shown_group['group'] != group_id) {
+
+        // Display off example view 
+        d3.select(`#ex-${blk}-${group}`)
+          .style('display', 'none')
+
+        // Dehighlight node
+        d3.select(`#${blk}-${group}`)
+          .attr('fill', get_css_var('--gray'))
+
+        // Highlight node of selected group
+        for (let g of selected_groups['groups']) {
+          d3.select(`#${g}`)
+            .attr('fill', get_css_var('--hotpink'))
+        }
+
+        // Highlight embedding of clicked groups
+        this_class.highlight_selected_and_nei_embedding()
+        
+      } 
+    }, 700)
+
+    // Dehighlight edge
+    d3.selectAll(`.edge-${group}`)
+      .classed('flowline', false)
+
+    // Highlight embedding of clicked groups
+    this.highlight_selected_and_nei_embedding()
+
+    // Highlight node of selected group
+    for (let g of selected_groups['groups']) {
+      d3.select(`#${g}`)
+        .attr('fill', get_css_var('--hotpink'))
+    }
+
+  }
+
+  mouseleave_normal(node) {
     let [blk, group] = node.id.split('-g-')
     group = `g-` + group
     let group_id = `${blk}-${group}`
@@ -1610,11 +1687,18 @@ export class GraphView {
           let y = this_class.blk_y[blk]
           return y
         })
-        .attr('fill', get_css_var('--hot-pink'))
+        .attr('fill', get_css_var('--hotpink'))
         .attr('width', graph_style['node_w'])
         .attr('height', graph_style['node_h'])
         .style('display', 'block')
         .style('cursor', 'pointer')
+
+    for (let item of Object.entries(this_class.node_cascade[selected_group]['existing'])) {
+      let g = item[0]
+      let blk = g.split('-')[1]
+      d3.select(`#${blk}-${g}`)
+        .attr('fill', get_css_var('--hotpink'))
+    }
   }
 
   draw_cascade_block_wrap() {
@@ -1633,7 +1717,7 @@ export class GraphView {
       d3.select('#graph_view-cascade-node-g')
         .append('rect')
         .attr('id', `cascade-blk-bg-${blk}`)
-        .attr('class', 'blk-bg')
+        .attr('class', 'blk-bg cascade-blk-bg')
         .attr('x', () => {
           return this_class.blk_x[`${blk}-cascade`] - H / 2 + h / 2
         })

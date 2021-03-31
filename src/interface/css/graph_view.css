@@ -94,6 +94,12 @@
   opacity: 0.3;
 }
 
+.cascade-blk-bg {
+  stroke: black;
+  stroke-dasharray: 30px 20px;
+  stroke-width: 8px;
+}
+
 .node {
   cursor: pointer;
 }

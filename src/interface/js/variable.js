@@ -12,7 +12,10 @@ export var embedding_setup = {
 }
 
 export var selected_class = {
-  'synset': 'n02085936'
+  'synset': 'n02085936',
+  // 'synset': 'n02107574',
+  // 'synset': 'n02113624'
+  // 'synset': 'n04328186'
 }
 
 export var selected_groups = {
