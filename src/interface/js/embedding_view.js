@@ -533,7 +533,7 @@ export class EmbeddingHeader {
     // Title
     let title = document.createElement('div')
     title.className = 'embedding-header-title'
-    title.innerText = 'Reduced to 2D By'
+    title.innerText = 'Reduced to 2D by'
     dim.appendChild(title)
 
     // Text
