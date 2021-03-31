@@ -702,6 +702,15 @@ export class GraphView {
     return [edge_path]
   }
 
+  get_cascade_file_path() {
+    let synset = selected_class['synset']
+    let file_paths = [
+      `${data_path['cascade_node']}/cascade-node-${synset}.json`,
+      `${data_path['cascade_edge']}/cascade-edge-${synset}.json`
+    ]
+    return file_paths
+  }
+
   get_data_path_list() {
     let path_list = []
     path_list = path_list.concat(
@@ -709,6 +718,9 @@ export class GraphView {
     )
     path_list = path_list.concat(
       this.get_edge_file_path()
+    )
+    path_list = path_list.concat(
+      this.get_cascade_file_path()
     )
     return path_list
   }
@@ -740,7 +752,7 @@ export class GraphView {
   }
 
   reload_graph() {
-
+    // XXX
     // Turn on "Loading data" text
     d3.select('#loading_data')
       .style('display', 'block')
@@ -756,9 +768,13 @@ export class GraphView {
         d3.selectAll('.example-view-wrapper').remove()
         selected_groups['groups'] = new Set()
         selected_groups['neurons'] = new Set()
+        this_class.disable_cascade_mode()
 
         this_class.parse_node_data(data[0])
         this_class.parse_edge_data(data[1])
+        // data[2]
+        this_class.node_cascade = data[2]
+        this_class.edge_cascade = data[3]
 
         this_class.refresh_emb()
         this_class.update_num_nodes()
