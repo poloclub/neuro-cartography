@@ -141,7 +141,7 @@ export class EmbeddingView {
       .duration(750)
       .call(
         zoom.transform,
-        d3.zoomIdentity.translate(W * 0.1, H * 0.45).scale(0.75)
+        d3.zoomIdentity.translate(W * 0.1, H * 0.25).scale(0.75)
       )
   }
 
