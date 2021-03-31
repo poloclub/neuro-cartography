@@ -253,7 +253,7 @@ export class GraphViewHeader {
         icon_i.style.transform = 'rotateY(180deg)'
 
         // Disable cascade mode
-        // this_class.graph_view.disable_cascade_mode()
+        this_class.graph_view.disable_cascade_mode()
 
       }
 
@@ -1306,7 +1306,12 @@ export class GraphView {
     if (mode['mode'] == 'normal') {
       cilck_node_normal(node)
     } else {
-      d3.select('#graph_view-cascade-node-g').selectAll('.node').remove()
+      d3.select('#graph_view-cascade-node-g')
+        .selectAll('.node').remove()
+      d3.select('#graph_view-cascade-node-g')
+        .selectAll('rect').remove()
+      d3.select('#graph_view-cascade-node-g')
+        .selectAll('text').remove()
       cascade_group['selected'] = node.id
       this.set_group_layout_x_cascade()
       this.draw_cascade()
@@ -1506,7 +1511,7 @@ export class GraphView {
     let W = graph_style['node_w'] + graph_style['x_gap']
     let selected_group = cascade_group['selected'].split('-g-')[1]
     selected_group = 'g-' + selected_group
-    console.log(this_class.node_cascade[selected_group]['new'])
+    
     d3.select('#graph_view-cascade-node-g')
       .selectAll('nodes')
       .data(        
@@ -1633,7 +1638,12 @@ export class GraphView {
 
     mode['mode'] = 'normal'
     cascade_group['selected'] = null
-
+    d3.select('#graph_view-cascade-node-g')
+      .selectAll('.node').remove()
+    d3.select('#graph_view-cascade-node-g')
+      .selectAll('rect').remove()
+    d3.select('#graph_view-cascade-node-g')
+      .selectAll('text').remove()
   }
 
 
