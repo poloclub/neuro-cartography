@@ -334,6 +334,7 @@ export class EmbeddingView {
   }
 
   highlight_clicked_dot() {
+    
     let this_class = this
     d3.select(`#dot-${selected_neuron['selected']}`)
       .attr('fill',  'white')

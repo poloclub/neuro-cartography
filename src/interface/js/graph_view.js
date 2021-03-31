@@ -4,7 +4,8 @@ import {
 } from './constant.js'
 import {
   shown_group, mode, selected_groups, selected_class, filter_nodes,
-  selected_neuron, most_related_neurons, neuron_to_group, cascade_group
+  selected_neuron, most_related_neurons, neuron_to_group, cascade_group,
+  embedding_setup
 } from './variable.js'
 import { Dropdown } from './dropdown.js'
 import { get_css_var } from './utils.js'
@@ -229,6 +230,74 @@ export class GraphViewHeader {
         // Update mode
         mode['mode'] = 'cascade'
 
+        // Refresh selection option
+        selected_groups['groups'] = new Set()
+        d3.selectAll('.emb-dot')
+          .style('stroke', (d) => {
+            let neuron_id = d['neuron']
+            if (neuron_id == selected_neuron) {
+              return get_css_var('--dodgerblue')
+            } else {
+              return 'none'
+            }
+          })
+          .attr('fill', (d) => {
+            // TODO:
+            let neuron_id = d['neuron']
+            let is_in_neighbor = document.getElementById(`NNView-neighbors-${neuron_id}`) != null            
+            if (neuron_id == selected_neuron) {
+              return get_css_var('--dodgerblue')
+            } else {
+              if (is_in_neighbor) {
+                return get_css_var('--dodgerblue')
+              } else {
+                return get_css_var('--gray')
+              }
+            }
+          })
+          .attr('width', (d) => {
+            let neuron_id = d['neuron']
+            let is_in_neighbor = document.getElementById(`NNView-neighbors-${neuron_id}`) != null
+            let width = d3.select(`#dot-${neuron_id}`).attr('width')
+            if (neuron_id == selected_neuron) {
+              return width
+            } else {
+              if (is_in_neighbor) {
+                return width
+              } else {
+                return emb_style['normal-r']
+              }
+            }
+          })
+          .attr('height', (d) => {
+            let neuron_id = d['neuron']
+            let is_in_neighbor = document.getElementById(`NNView-neighbors-${neuron_id}`) != null
+            let height = d3.select(`#dot-${neuron_id}`).attr('height')
+            if (neuron_id == selected_neuron) {
+              return height
+            } else {
+              if (is_in_neighbor) {
+                return height
+              } else {
+                return emb_style['normal-r']
+              }
+            }
+          })
+          .style('opacity', (d) => {
+            let neuron_id = d['neuron']
+            let is_in_neighbor = document.getElementById(`NNView-neighbors-${neuron_id}`) != null
+            if (neuron_id == selected_neuron) {
+              return emb_style['highlight-opacity']
+            } else {
+              if (is_in_neighbor) {
+                return emb_style['highlight-opacity']
+              } else {
+                return emb_style['normal-opacity']
+              }
+            }
+            
+          })
+
         // Mode color
         d3.select('#normal-mode')
         .style('color', get_css_var('--bright_gray_text'))
@@ -267,6 +336,7 @@ export class GraphViewHeader {
     mode_wrap.appendChild(mode_cascade)
 
   }
+
 
   add_filter_slider() {
 
@@ -1253,6 +1323,7 @@ export class GraphView {
     // Highlight edge
     d3.selectAll(`.edge-${group}`)
       .classed('flowline', true)
+
   }
 
   mouseleave_node(node) {
@@ -1662,7 +1733,8 @@ export class GraphView {
           let class1 = 'edge-path'
           let class2 = `edge-${group}`
           let class3 = `edge-${prev_group}`
-          return [class1, class2, class3].join(' ')
+          let class4 = 'edge-cascade'
+          return [class1, class2, class3, class4].join(' ')
         })
         .attr('d', function(d) {     
           let [prev_group, group] = d[0].split(',')          
