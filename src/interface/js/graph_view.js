@@ -1304,7 +1304,9 @@ export class GraphView {
   click_node(node) {
 
     if (mode['mode'] == 'normal') {
-      cilck_node_normal(node)
+
+      this.cilck_node_normal(node)
+
     } else {
       d3.select('#graph_view-cascade-node-g')
         .selectAll('.node').remove()
@@ -1312,6 +1314,8 @@ export class GraphView {
         .selectAll('rect').remove()
       d3.select('#graph_view-cascade-node-g')
         .selectAll('text').remove()
+      d3.select('#graph_view-cascade-edge-g')
+        .selectAll('path').remove()
       cascade_group['selected'] = node.id
       this.set_group_layout_x_cascade()
       this.draw_cascade()
@@ -1501,8 +1505,9 @@ export class GraphView {
 
   draw_cascade() {
 
-    this.draw_cascade_nodes()
     this.draw_cascade_block_wrap()
+    this.draw_cascade_nodes()
+    this.draw_cascade_edges()
 
   }
 
@@ -1538,6 +1543,7 @@ export class GraphView {
         .attr('width', graph_style['node_w'])
         .attr('height', graph_style['node_h'])
         .style('display', 'block')
+        .style('cursor', 'pointer')
   }
 
   draw_cascade_block_wrap() {
@@ -1634,6 +1640,126 @@ export class GraphView {
     }
   }
 
+  draw_cascade_edges() {
+
+    let this_class = this
+    // this.gen_edge_width_scale()
+
+    let selected_group = cascade_group['selected']
+    let initial_node = 'g-' + selected_group.split('-g-')[1]
+
+    d3.select('#graph_view-cascade-edge-g')
+      .selectAll('edges')
+      .data(Object.entries(this_class.edge_cascade[initial_node]))
+      .enter()
+        .append('path')
+        .attr('id', d => {
+          let [group, prev_group] = d[0].split(',')
+          return gen_edge_id(group, prev_group)
+        })
+        .attr('class', (d) => {
+          let [group, prev_group] = d[0].split(',')
+          let class1 = 'edge-path'
+          let class2 = `edge-${group}`
+          let class3 = `edge-${prev_group}`
+          return [class1, class2, class3].join(' ')
+        })
+        .attr('d', function(d) {     
+          let [prev_group, group] = d[0].split(',')          
+          // console.log(group, prev_group)
+          return gen_path(group, prev_group) 
+        })
+        .attr('stroke-width', function(d) {
+          // TODO: stroke width
+          return 4
+        })
+        .attr('stroke', graph_style['edge_color'])
+        .style('display', function(d) {
+
+          // Node id
+          let [prev_group, group] = d[0].split(',')  
+          if (!(group.includes('new'))) {
+            let b = group.split('-')[1]
+            group = b + '-' + group
+          }
+          if (!(prev_group.includes('new'))) {
+            let b = prev_group.split('-')[1]
+            prev_group = b + '-' + prev_group
+          }
+
+          // Check if the nodes are in the graph
+          if (document.getElementById(group) == null) {
+            return 'none'
+          }
+          if (document.getElementById(prev_group) == null) {
+            return 'none'
+          }
+
+          // Check if prev block is shown
+          let is_prev_off = d3
+            .select(`#${prev_group}`)
+            .style('display') == 'none'
+          if (is_prev_off) {
+            return 'none'
+          }
+
+          // Check if curr block is shown
+          let is_curr_off = d3
+            .select(`#${group}`)
+            .style('display') == 'none'
+          if (is_curr_off) {
+            return 'none'
+          }
+
+          
+          return 'inline-block'
+
+        })
+
+    function gen_edge_id(group, prev_group) {
+      return `${group}-conn-${prev_group}`
+    }
+
+    function gen_path(group, prev_group) {
+
+      // Blk
+      let blk = ''
+      let groun_n = ''
+      if (group.includes('new')) {
+        blk = group.split('-')[2] + '-cascade'
+        groun_n = parseInt(group.split('-')[3])
+      } else {
+        blk = group.split('-')[1]
+        groun_n = parseInt(group.split('-')[2])
+      }
+      
+      // Prev blk
+      let prev_blk = ''
+      let prev_group_n = ''
+      if (prev_group.includes('new')) {
+        prev_blk = prev_group.split('-')[2] + '-cascade'
+        prev_group_n = parseInt(prev_group.split('-')[3])
+      } else {
+        prev_blk = prev_group.split('-')[1]
+        prev_group_n = parseInt(prev_group.split('-')[2])
+      }
+
+      // Generate curve
+      let W = graph_style['node_w'] + graph_style['x_gap']
+      let H = graph_style['node_h'] 
+      let x1 = this_class.blk_x[prev_blk] + prev_group_n * W
+      let y1 = this_class.blk_y[prev_blk.replace('-cascade', '')] + 0.05 * H 
+      let x2 = this_class.blk_x[blk] + groun_n * W
+      let y2 = this_class.blk_y[blk.replace('-cascade', '')] - 0.05 * H 
+      x1 += graph_style['node_w'] / 2
+      x2 += graph_style['node_w'] / 2
+      y2 += graph_style['node_h'] 
+
+      return this_class.gen_curve(x1, y1, x2, y2)
+    }
+    
+  }
+
   disable_cascade_mode() {
 
     mode['mode'] = 'normal'
@@ -1644,6 +1770,8 @@ export class GraphView {
       .selectAll('rect').remove()
     d3.select('#graph_view-cascade-node-g')
       .selectAll('text').remove()
+    d3.select('#graph_view-cascade-edge-g')
+      .selectAll('path').remove()
   }
 
 
