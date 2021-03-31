@@ -68,6 +68,15 @@ class Main {
     return emb_paths
   }
 
+  get_cascade_file_path() {
+    let synset = selected_class['synset']
+    let file_paths = [
+      `${data_path['cascade_node']}/cascade-node-${synset}.json`,
+      `${data_path['cascade_edge']}/cascade-edge-${synset}.json`
+    ]
+    return file_paths
+  }
+
   get_data_path_list() {
     let path_list = []
     path_list = path_list.concat(
@@ -78,6 +87,9 @@ class Main {
     )
     path_list = path_list.concat(
       this.get_edge_file_path()
+    )
+    path_list = path_list.concat(
+      this.get_cascade_file_path()
     )
     return path_list
   }
@@ -96,7 +108,7 @@ class Main {
 
         // Generate graph view
         this_class.generate_graph_view(
-          data[6], data[7]
+          data[6], data[7], data[8], data[9]
         )
 
         // Generate embedding view
@@ -150,10 +162,12 @@ class Main {
     this.nn_view.gen_neighbor_view()
   }
 
-  generate_graph_view(node_data, edge_data) {
+  generate_graph_view(node_data, edge_data, node_cascade, edge_cascade) {
     this.graph_view = new GraphView(
       node_data, 
       edge_data,
+      node_cascade,
+      edge_cascade,
       this.model
     )
     this.graph_view.draw_graph()

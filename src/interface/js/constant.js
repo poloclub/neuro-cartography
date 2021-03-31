@@ -17,7 +17,9 @@ export var data_path = {
   'neuron_group_path': './data/InceptionV1/bucket/bucket-all-10-20',
   'image_dir': './data/InceptionV1-vis/example-patch',
   'class_label': './data/imagenet-labels.txt',
-  'emb_path': './data/InceptionV1/embedding_2d'
+  'emb_path': './data/InceptionV1/embedding_2d',
+  'cascade_node': './data/InceptionV1/cascade-graph/node',
+  'cascade_edge': './data/InceptionV1/cascade-graph/edge'
 }
 
 export var graph_style = {

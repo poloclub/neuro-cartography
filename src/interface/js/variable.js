@@ -17,10 +17,14 @@ export var selected_class = {
 
 export var selected_groups = {
   'groups': new Set(),
-  'neurons': new Set()
+  'neurons': new Set(),
 }
 
 export var selected_neuron = {
+  'selected': null
+}
+
+export var cascade_group = {
   'selected': null
 }
 

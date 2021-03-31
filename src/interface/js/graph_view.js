@@ -4,7 +4,7 @@ import {
 } from './constant.js'
 import {
   shown_group, mode, selected_groups, selected_class, filter_nodes,
-  selected_neuron, most_related_neurons, neuron_to_group
+  selected_neuron, most_related_neurons, neuron_to_group, cascade_group
 } from './variable.js'
 import { Dropdown } from './dropdown.js'
 import { get_css_var } from './utils.js'
@@ -210,6 +210,7 @@ export class GraphViewHeader {
     mode_wrap.appendChild(mode_normal)
 
     // Mode icon
+    let this_class = this
     let icon = new Icon(
       'mode-icon', 'toggle-on', 'mode_icon'
     )
@@ -250,6 +251,10 @@ export class GraphViewHeader {
 
         // Icon 
         icon_i.style.transform = 'rotateY(180deg)'
+
+        // Disable cascade mode
+        // this_class.graph_view.disable_cascade_mode()
+
       }
 
     })
@@ -382,6 +387,52 @@ export class GraphViewHeader {
     }
   }
 
+  set_group_layout_x_cascade() {
+    console.log('???')
+
+    let selected_group = cascade_group['selected']
+    let W = graph_style['node_w'] + graph_style['x_gap']
+    let this_class = this
+
+    for (let layer of this.model.LAYERS) {
+      
+      // layer
+      let blk_5x5 = `${layer}_5x5`
+      let blk_layer_cascade = `${layer}-cascade`
+      let num_node_5x5 = num_new_node(blk_5x5)
+      this_class.graph_view.blk_x[blk_layer_cascade] = 
+        this_class.graph_view.blk_x[blk_5x5] + W * num_node_5x5
+        + graph_style['blk_gap']
+      console.log('5x5', num_node_5x5)
+
+      // 3x3
+      let blk_3x3_cascade = `${layer}_3x3-cascade`
+      this_class.graph_view.blk_x[blk_3x3_cascade] = 
+        this_class.graph_view.blk_x[blk_5x5] + W * num_node_5x5
+        + graph_style['blk_gap']
+
+      // 5x5
+      let blk_5x5_cascade = `${layer}_5x5-cascade`
+      let num_node_3x3 = num_new_node(`${layer}_3x3`)
+      this_class.graph_view.blk_x[blk_5x5_cascade] = 
+        this_class.graph_view.blk_x[blk_3x3_cascade] + W * num_node_3x3
+        + graph_style['blk_gap']
+
+    }
+
+    function num_new_node(blk) {
+      let n = 0
+      for (let new_group in this.graph_view.node_cascade[selected_group]['new']) {
+        let new_group_blk = new_group.split('-g-')[1].split('-')[0]
+        if (new_group_blk == blk) {
+          n += 1
+        }
+      }
+      return n
+    }
+
+  }
+
   set_layer_layout_y() {
     let y = 0
     for (let layer of this.model.REV_LAYERS) {
@@ -493,7 +544,7 @@ export class GraphViewHeader {
 
 export class GraphView {
 
-  constructor(node_data, edge_data, model) {
+  constructor(node_data, edge_data, node_cascade, edge_cascade, model) {
 
     // Model
     this.model = model
@@ -506,10 +557,14 @@ export class GraphView {
     this.parse_node_data(node_data)
     this.update_num_nodes()
 
-    // Edge daa
+    // Edge data
     this.edge_data = {}
     this.group_level_conn_data = {}
     this.parse_edge_data(edge_data)
+
+    // Cascade data
+    this.node_cascade = node_cascade
+    this.edge_cascade = edge_cascade
 
     // Layout
     this.blk_x = {}
@@ -689,7 +744,6 @@ export class GraphView {
   
   refresh_emb() {
 
-  
     let n2g = this.get_neuron_group_mapping()
     d3.selectAll('.emb-dot')
       .attr('class', (d) => {
@@ -704,12 +758,9 @@ export class GraphView {
       .attr('fill', get_css_var('--gray'))
       .attr('opacity', emb_style['normal-opacity'])
       
-
     this.highlight_selected_and_nei_embedding()
   }
   
-
-
   get_neuron_group_mapping() {
     let n2g = {}
     let nodes_of_class = this.node_data
@@ -737,6 +788,10 @@ export class GraphView {
             d3.select('#graph_view-node-g')
               .attr('transform', d3.event.transform)
             d3.select('#graph_view-edge-g')
+              .attr('transform', d3.event.transform)
+            d3.select('#graph_view-cascade-node-g')
+              .attr('transform', d3.event.transform)
+            d3.select('#graph_view-cascade-edge-g')
               .attr('transform', d3.event.transform)
             d3.selectAll('.example-view-wrapper')
               .style('display', 'none')
@@ -859,6 +914,56 @@ export class GraphView {
       }
     }
   }
+
+  set_group_layout_x_cascade() {
+
+    let W = graph_style['node_w'] + graph_style['x_gap']
+    let this_class = this
+
+    for (let layer of this.model.LAYERS) {
+      
+      // layer
+      let blk_5x5 = `${layer}_5x5`
+      let blk_layer_cascade = `${layer}-cascade`
+      let num_node_5x5 = num_new_node(blk_5x5)
+      this_class.blk_x[blk_layer_cascade] = 
+        this_class.blk_x[blk_5x5] + W * num_node_5x5
+        + graph_style['blk_gap']
+
+      if (layer == '3x3') {
+        continue
+      }
+
+      // 3x3
+      let blk_3x3_cascade = `${layer}_3x3-cascade`
+      this_class.blk_x[blk_3x3_cascade] = 
+        this_class.blk_x[blk_5x5] + W * num_node_5x5
+        + graph_style['blk_gap']
+
+      // 5x5
+      let blk_5x5_cascade = `${layer}_5x5-cascade`
+      let num_node_3x3 = num_new_node(`${layer}_3x3`)
+      this_class.blk_x[blk_5x5_cascade] = 
+        this_class.blk_x[blk_3x3_cascade] + W * num_node_3x3
+        + graph_style['blk_gap']
+
+    }
+
+    function num_new_node(blk) {
+      let n = 0
+      let selected_group = cascade_group['selected'].split('-g-')[1]
+      selected_group = 'g-' + selected_group
+      for (let new_group in this_class.node_cascade[selected_group]['new']) {
+        let new_group_blk = new_group.split('-g-')[1].split('-')[0]
+        if (new_group_blk == blk) {
+          n += 1
+        }
+      }
+      return n
+    }
+
+  }
+
 
   ///////////////////////////////////////////////////////
   // Layer block styling
@@ -1010,8 +1115,6 @@ export class GraphView {
 
   highlight_selected_and_nei_embedding() {
 
-    
-
     // Turn off other embeddings first
     d3.selectAll('.emb-dot')
       .attr('fill', get_css_var('--gray'))
@@ -1082,10 +1185,6 @@ export class GraphView {
         .attr('height', emb_style['highlight-r'])
         .raise()
     }
-  }
-
-  highligt_node() {
-
   }
 
   is_in_selected_group(neuron) {
@@ -1244,6 +1343,18 @@ export class GraphView {
 
   click_node(node) {
 
+    if (mode['mode'] == 'normal') {
+      cilck_node_normal(node)
+    } else {
+      d3.select('#graph_view-cascade-node-g').selectAll('.node').remove()
+      cascade_group['selected'] = node.id
+      this.set_group_layout_x_cascade()
+      this.draw_cascade()
+    }    
+
+  }
+
+  cilck_node_normal(node) {
     if (selected_groups['groups'].has(node.id)) {
 
       // Remove group from the selected groups
@@ -1287,7 +1398,6 @@ export class GraphView {
         .attr('r', emb_style['highlight-r'])
 
     }
-
   }
 
   ///////////////////////////////////////////////////////
@@ -1419,5 +1529,58 @@ export class GraphView {
         graph_style['edge_width_max']
       ])
   }
+
+  ///////////////////////////////////////////////////////
+  // Cascade mode
+  ///////////////////////////////////////////////////////
+
+  draw_cascade() {
+
+    let this_class = this
+    let W = graph_style['node_w'] + graph_style['x_gap']
+    let selected_group = cascade_group['selected'].split('-g-')[1]
+    selected_group = 'g-' + selected_group
+    console.log(this_class.node_cascade[selected_group]['new'])
+    d3.select('#graph_view-cascade-node-g')
+      .selectAll('nodes')
+      .data(        
+        Object.entries(this_class.node_cascade[selected_group]['new'])
+      )
+      .enter()
+        .append('rect')
+        .attr('id', d => d[0])
+        .attr('class', 'node')
+        .attr('rx', 100)
+        .attr('ry', 100)
+        .attr('x', d => {
+          let blk = d[0].split('-g-')[1].split('-')[0]
+          let x = this_class.blk_x[`${blk}-cascade`]
+          let i = parseInt(d[0].split('-')[3])
+          return x + i * W
+        })
+        .attr('y', d => {
+          let blk = d[0].split('-g-')[1].split('-')[0]
+          let y = this_class.blk_y[blk]
+          return y
+        })
+        .attr('fill', get_css_var('--gray'))
+        .attr('width', graph_style['node_w'])
+        .attr('height', graph_style['node_h'])
+        .style('display', 'block')
+
+
+  }
+
+  draw_cascade_nodes() {
+
+  }
+
+  disable_cascade_mode() {
+
+    mode['mode'] = 'normal'
+    cascade_group['selected'] = null
+
+  }
+
 
 }
