@@ -888,7 +888,7 @@ export class GraphView {
       let num_node_5x5 = num_new_node(blk_5x5)
       this_class.blk_x[blk_layer_cascade] = 
         this_class.blk_x[blk_5x5] + W * num_node_5x5
-        + graph_style['blk_gap'] * 2
+        + graph_style['blk_gap'] * 3
 
       if (layer == '3x3') {
         continue
@@ -905,7 +905,7 @@ export class GraphView {
       let num_node_3x3 = num_new_node(`${layer}_3x3`)
       this_class.blk_x[blk_5x5_cascade] = 
         this_class.blk_x[blk_3x3_cascade] + W * num_node_3x3
-        + graph_style['blk_gap']
+        + graph_style['blk_gap'] * 2
 
     }
 
@@ -1572,6 +1572,35 @@ export class GraphView {
         .style('opacity', graph_style['blk_bg']['opacity'])
         .attr('rx', graph_style['blk_bg']['rx'])
         .attr('ry', graph_style['blk_bg']['ry'])
+
+      // Add block name
+      d3.select('#graph_view-cascade-node-g')
+        .append('text')
+        .attr('id', `blk-${blk}`)
+        .attr('class', 'layer-name')
+        .text(blk)
+        .attr('x', () => {
+          return this_class.blk_x[`${blk}-cascade`]
+        })
+        .attr('y', () => {
+          return this_class.blk_y[blk] - H / 2
+        })
+        .style('display', () => {
+          if (get_blk_bg_w(blk) == 0) {
+            return 'none'
+          } else {
+            return 'inline-block'
+          }
+        })
+        .attr('fill', () => {
+          if (blk.includes('3x3')) {
+            return graph_style['blk_name']['color']['3x3']
+          } else if (blk.includes('5x5')) {
+            return graph_style['blk_name']['color']['5x5']
+          } else {
+            return graph_style['blk_name']['color']['normal']
+          }
+        })
     }
 
     function get_blk_bg_w(blk) {
