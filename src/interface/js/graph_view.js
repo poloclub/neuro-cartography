@@ -388,48 +388,8 @@ export class GraphViewHeader {
   }
 
   set_group_layout_x_cascade() {
-    console.log('???')
 
-    let selected_group = cascade_group['selected']
-    let W = graph_style['node_w'] + graph_style['x_gap']
-    let this_class = this
-
-    for (let layer of this.model.LAYERS) {
-      
-      // layer
-      let blk_5x5 = `${layer}_5x5`
-      let blk_layer_cascade = `${layer}-cascade`
-      let num_node_5x5 = num_new_node(blk_5x5)
-      this_class.graph_view.blk_x[blk_layer_cascade] = 
-        this_class.graph_view.blk_x[blk_5x5] + W * num_node_5x5
-        + graph_style['blk_gap']
-      console.log('5x5', num_node_5x5)
-
-      // 3x3
-      let blk_3x3_cascade = `${layer}_3x3-cascade`
-      this_class.graph_view.blk_x[blk_3x3_cascade] = 
-        this_class.graph_view.blk_x[blk_5x5] + W * num_node_5x5
-        + graph_style['blk_gap']
-
-      // 5x5
-      let blk_5x5_cascade = `${layer}_5x5-cascade`
-      let num_node_3x3 = num_new_node(`${layer}_3x3`)
-      this_class.graph_view.blk_x[blk_5x5_cascade] = 
-        this_class.graph_view.blk_x[blk_3x3_cascade] + W * num_node_3x3
-        + graph_style['blk_gap']
-
-    }
-
-    function num_new_node(blk) {
-      let n = 0
-      for (let new_group in this.graph_view.node_cascade[selected_group]['new']) {
-        let new_group_blk = new_group.split('-g-')[1].split('-')[0]
-        if (new_group_blk == blk) {
-          n += 1
-        }
-      }
-      return n
-    }
+    // XXX
 
   }
 
@@ -928,7 +888,7 @@ export class GraphView {
       let num_node_5x5 = num_new_node(blk_5x5)
       this_class.blk_x[blk_layer_cascade] = 
         this_class.blk_x[blk_5x5] + W * num_node_5x5
-        + graph_style['blk_gap']
+        + graph_style['blk_gap'] * 2
 
       if (layer == '3x3') {
         continue
@@ -938,7 +898,7 @@ export class GraphView {
       let blk_3x3_cascade = `${layer}_3x3-cascade`
       this_class.blk_x[blk_3x3_cascade] = 
         this_class.blk_x[blk_5x5] + W * num_node_5x5
-        + graph_style['blk_gap']
+        + graph_style['blk_gap'] * 2
 
       // 5x5
       let blk_5x5_cascade = `${layer}_5x5-cascade`
@@ -1536,6 +1496,12 @@ export class GraphView {
 
   draw_cascade() {
 
+    this.draw_cascade_nodes()
+    this.draw_cascade_block_wrap()
+
+  }
+
+  draw_cascade_nodes() {
     let this_class = this
     let W = graph_style['node_w'] + graph_style['x_gap']
     let selected_group = cascade_group['selected'].split('-g-')[1]
@@ -1567,12 +1533,71 @@ export class GraphView {
         .attr('width', graph_style['node_w'])
         .attr('height', graph_style['node_h'])
         .style('display', 'block')
-
-
   }
 
-  draw_cascade_nodes() {
+  draw_cascade_block_wrap() {
 
+    let this_class = this
+    let H = graph_style['blk_bg']['height']
+    let h = graph_style['node_h']
+
+    for (let blk of this.model.BLKS) {
+
+      if (blk == 'mixed3a') {
+        continue
+      }
+
+      // Add block bg-rect
+      d3.select('#graph_view-cascade-node-g')
+        .append('rect')
+        .attr('id', `cascade-blk-bg-${blk}`)
+        .attr('class', 'blk-bg')
+        .attr('x', () => {
+          return this_class.blk_x[`${blk}-cascade`] - H / 2 + h / 2
+        })
+        .attr('y', () => {
+          return this_class.blk_y[blk] - H / 2 + h / 2
+        })
+        .attr('width', get_blk_bg_w(blk))
+        .attr('height', H)
+        .attr('fill', () => {
+          if (blk.includes('3x3')) {
+            return graph_style['blk_bg']['color']['3x3']
+          } else if (blk.includes('5x5')) {
+            return graph_style['blk_bg']['color']['5x5']
+          } else {
+            return graph_style['blk_bg']['color']['normal']
+          }
+        })
+        .style('opacity', graph_style['blk_bg']['opacity'])
+        .attr('rx', graph_style['blk_bg']['rx'])
+        .attr('ry', graph_style['blk_bg']['ry'])
+    }
+
+    function get_blk_bg_w(blk) {
+      let W = graph_style['node_w'] + graph_style['x_gap']
+      let num_neuron = num_new_node(blk)
+      let H = graph_style['blk_bg']['height']
+      let h = graph_style['node_h']
+      if (num_neuron == 0) {
+        return 0
+      } else {
+        return W * num_neuron + H - h - graph_style['x_gap']
+      }
+    }
+
+    function num_new_node(blk) {
+      let n = 0
+      let selected_group = cascade_group['selected'].split('-g-')[1]
+      selected_group = 'g-' + selected_group
+      for (let new_group in this_class.node_cascade[selected_group]['new']) {
+        let new_group_blk = new_group.split('-g-')[1].split('-')[0]
+        if (new_group_blk == blk) {
+          n += 1
+        }
+      }
+      return n
+    }
   }
 
   disable_cascade_mode() {
