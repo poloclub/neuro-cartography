@@ -1692,6 +1692,10 @@ export class GraphView {
         .attr('height', graph_style['node_h'])
         .style('display', 'block')
         .style('cursor', 'pointer')
+        .on('mouseover', (d) => {
+          console.log(d)
+          this_class.show_cluster_popup_cascade(d)
+        })
 
     for (let item of Object.entries(this_class.node_cascade[selected_group]['existing'])) {
       let g = item[0]
@@ -1699,6 +1703,63 @@ export class GraphView {
       d3.select(`#${blk}-${g}`)
         .attr('fill', get_css_var('--hotpink'))
     }
+  }
+
+  show_cluster_popup_cascade(d) {
+
+    // Generate example view
+    let group = d[0]
+    let blk = group.split('-')[2]
+    // group = 'g-' + group
+    let neurons = d[1]['neurons']
+    let view_id = `ex-${d[0]}`
+    if (document.getElementById(view_id) == null) {
+      let ex_view = new ExampleView(
+        'example_view', blk, group, 'example-view', neurons
+      )
+      ex_view.gen_example_view()
+    }
+
+    // Example view scale
+    let curr_scale = d3.select('#graph_view-node-g').attr('transform')
+    curr_scale = parseFloat(curr_scale.split('scale(')[1].slice(0, -1)) 
+
+    console.log(d3.select(`#ex-${blk}-${d[0]}`))
+
+    // Show example patches of neurons
+    d3.select(`#ex-${blk}-${d[0]}`)
+      .style('display', 'block')
+      .style('left', () => {
+        let x = d3.event.pageX
+        let w = 550
+        let mv_x = -w * (1 - 3 * curr_scale) / 2
+        mv_x += (3 * curr_scale) * graph_style['node_w'] * 4.5
+        return (x + mv_x) + 'px'
+      })
+      .style('top', () => {
+        let y = d3.event.pageY
+        let h = patch_style['one_neuron_wrap_height']
+        h = d3.min([
+          h * patch_style['max_num_wrap'],
+          h * neurons.length
+        ])
+        let mv_y = -h * (1 - 3 * curr_scale) / 2
+        mv_y -= graph_style['node_h'] * curr_scale
+        return (y + mv_y) + 'px'
+      })
+      .style('height', () => {
+        let h = patch_style['one_neuron_wrap_height']
+        h = d3.min([
+          h * patch_style['max_num_wrap'],
+          h * neurons.length
+        ])
+        return h + 'px'
+      })
+      // .style('transform', `translate(-500px, 500px) scale(${3 * curr_scale})`)
+      .style('transform', `scale(${3 * curr_scale})`)
+    // shown_group['group'] = `${blk}-${group}`
+  
+
   }
 
   draw_cascade_block_wrap() {
@@ -1935,6 +1996,7 @@ export class GraphView {
       .selectAll('text').remove()
     d3.select('#graph_view-cascade-edge-g')
       .selectAll('path').remove()
+    d3.selectAll('.example-view-cascade').remove()
   }
 
 

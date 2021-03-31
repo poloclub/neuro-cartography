@@ -31,7 +31,7 @@ export class ExampleView {
     // Generate group wrapper and inner wrapper
     this.gen_group_wrapper(blk, group)
     let inner_wrapper = d3.select(`#inner-wrapper-${blk}-${group}`)
-
+    
     for (let [neuron_i, neuron] of neurons.entries()) {
 
       // Neuon wrapper
