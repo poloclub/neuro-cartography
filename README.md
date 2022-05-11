@@ -2,9 +2,9 @@
 
 NeuroCartography is an interactive visualization system for scalable automatic visual summarization of concepts in deep neural networks. 
 
-📄 [Our manuscript][paper]
-🎥 [Video][youtube]
-💛 [Demo][demo]
+- 📄 [Our manuscript][paper]
+- 🎥 [Video][youtube]
+- 💛 [Demo][demo]
 
 ## Set up conda environment
 
