@@ -1,6 +1,10 @@
 # NeuroCartography
 
-Scalable Automatic Visual Summarization of Concepts in Deep Neural Networks
+NeuroCartography is an interactive visualization system for scalable automatic visual summarization of concepts in deep neural networks. 
+
+📄 [Our manuscript][paper]
+🎥 [Video][youtube]
+💛 [Demo][demo]
 
 ## Set up conda environment
 
@@ -50,3 +54,5 @@ The codes to generate data are in `neuro-cartography/src/python`.
 
 [demo]: https://poloclub.github.io/neuro-cartography/
 [src]: https://github.com/poloclub/neuro-cartography
+[youtube]: https://youtu.be/gx0dDNXFJA0
+[paper]: https://arxiv.org/abs/2108.12931
